@@ -1,0 +1,45 @@
+.link-primary {
+  color: #03884a;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+  cursor: pointer;
+}
+
+.custom-card {
+  cursor: pointer;
+  &:hover {
+    .ant-card-body {
+      background-color: #bebebe !important;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+  }
+}
+
+.danger-card {
+  background-color: #f29596;
+  color: white;
+
+  &:hover {
+    .ant-card-body {
+      background-color: #ef7c7d !important;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+  }
+}
+
+.success-card {
+  background-color: #60dd9e;
+  color: white;
+
+  &:hover {
+    .ant-card-body {
+      background-color: #27b06b !important;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+  }
+}

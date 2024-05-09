@@ -1,0 +1,22 @@
+.welcome-page {
+  height: 100vh;
+  width: 100vw;
+  background-image: url("../../../assets/images/background.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .ant-form-item-label {
+    width: 130px;
+  }
+}
+
+.logo {
+  font-size: 72px;
+  font-weight: 600;
+  background: -webkit-linear-gradient(45deg, #fbda61 0%, #ff5acd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

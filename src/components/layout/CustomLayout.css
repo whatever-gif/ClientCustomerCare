@@ -1,0 +1,64 @@
+.custom-layout .custom-header .ant-tabs-nav {
+  margin: 0;
+}
+
+.custom-layout .custom-header .ant-tabs-nav::before {
+  border: none;
+}
+
+.custom-layout .custom-header .ant-tabs-tab-active .nav-item {
+  font-weight: 600;
+}
+
+.custom-layout .custom-header .ant-tabs-tab-btn {
+  color: #fff !important;
+}
+
+.custom-layout .custom-header .ant-tabs-ink-bar {
+  background-color: #fff;
+}
+
+.custom-layout .custom-header .nav-item {
+  font-size: 14px;
+}
+
+.custom-layout .header-nav a {
+  position: relative;
+  color: #fff;
+  min-width: 100px;
+  width: 100px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.custom-layout .header-nav a:hover {
+  font-weight: 600;
+}
+
+.custom-layout .header-nav a.active {
+  font-weight: 600;
+}
+
+.custom-layout .header-nav a.active:before {
+  position: absolute;
+  content: "";
+  width: 50px;
+  height: 1px;
+  background-color: #fff;
+  bottom: 10px;
+  left: calc(75% - 50px);
+}
+
+.custom-layout .main-content {
+  padding-inline: 48px;
+  overflow: hidden;
+  height: calc(100vh - 64px);
+}
+/*# sourceMappingURL=CustomLayout.css.map */

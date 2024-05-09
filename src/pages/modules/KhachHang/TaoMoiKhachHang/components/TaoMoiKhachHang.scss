@@ -1,0 +1,23 @@
+#TaoMoiKhachHang {
+  label {
+    min-width: 120px;
+  }
+
+  .ant-picker-range {
+    width: 100%;
+  }
+
+  .custom-header {
+    .ant-form-item {
+      margin: 0;
+    }
+
+    .custom-header-breadcrumb {
+      display: flex;
+      align-items: center;
+    }
+  }
+  .divider-custom {
+    margin: 12px 0;
+  }
+}
