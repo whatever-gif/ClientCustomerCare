@@ -1,6 +1,6 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { faker } from "@faker-js/faker";
-import { Button, Col, DatePicker, Form, Input, Row, Select } from "antd";
+import { Button, Col, DatePicker, Form, Row, Select } from "antd";
 import React from "react";
 import "./FormTimKiem.scss";
 import { useDataSource } from "./components/useDataSource";
@@ -12,12 +12,7 @@ const FormTimKiem = ({ onFormSubmit }) => {
 
   const onFinish = (values) => {
     const result = {
-      MaTicket: values.MaTicket ?? "",
-      TenTicket: values.TenTicket ?? "",
-      MaKhachHang: values.MaKhachHang ?? "",
       MaPhanLoaiTicket: values.MaPhanLoaiTicket ?? "",
-      MaTrangThaiTicket: values.MaTrangThaiTicket ?? "",
-      FlagQuaHanXuLy: values.FlagQuaHanXuLy == true ? 1 : 0,
       ThoiGianTaoTu:
         values.ThoiGianTao && values.ThoiGianTao[0]
           ? values.ThoiGianTao[0].format("YYYY-MM-DD")
@@ -35,9 +30,12 @@ const FormTimKiem = ({ onFormSubmit }) => {
 
   const onFinishFailed = (errorInfo) => {};
 
+  const filterOption = (input, option) =>
+    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+
   return (
     <Form
-      name="QuanLyKhachHang"
+      name="basic"
       initialValues={{
         remember: true,
       }}
@@ -49,25 +47,6 @@ const FormTimKiem = ({ onFormSubmit }) => {
     >
       <Row gutter={24}>
         <Col span={7}>
-          <Form.Item label="Mã khách hàng" name="MaKhachHang">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Tên khách hàng" name="TenKhachHang">
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
-          <Form.Item label="Số điện thoại" name="SoDienThoai">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Email" name="Email">
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
-          <Form.Item label="Ngày tạo" name="NgayTao">
-            <RangePicker width={"100%"} />
-          </Form.Item>
           <Form.Item label="Người tạo" name="NguoiTao">
             <Select
               options={dataSource.ListNguoiDung}
@@ -77,7 +56,22 @@ const FormTimKiem = ({ onFormSubmit }) => {
             ></Select>
           </Form.Item>
         </Col>
-        <Col span={3} aria-rowspan={3}>
+        <Col span={7}>
+          <Form.Item label="Phân loại" name="MaPhanLoaiTicket">
+            <Select
+              options={dataSource.ListPhanLoai}
+              allowClear
+              filterOption
+              showSearch
+            />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="Thời gian tạo" name="ThoiGianTao">
+            <RangePicker width={"100%"} allowEmpty={[true, false]} />
+          </Form.Item>
+        </Col>
+        <Col span={3}>
           <Form.Item>
             <Button
               type="primary"

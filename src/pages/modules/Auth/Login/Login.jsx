@@ -1,4 +1,5 @@
 import { Button, Card, Col, Flex, Form, Input, Row, Typography } from "antd";
+import React from "react";
 import { useSubmit } from "react-router-dom";
 import { customizeRequiredMark } from "../../../../components/reuse/CustomRequire";
 
@@ -7,15 +8,6 @@ function LoginPage() {
 
   const onFinish = async (data) => {
     submit(data, { method: "POST", action: "/login" });
-
-    // if (redirectTo) {
-    //   navigate(redirectTo);
-    //   localStorage.setItem("Email", data.Email); // Store username in localStorage
-    //   message.success("Đăng nhập thành công!");
-    // } else {
-    //   // console.error('Login failed: No redirect provided from loginAction.');
-    //   message.error("Đăng nhập thất bại!");
-    // }
   };
 
   return (

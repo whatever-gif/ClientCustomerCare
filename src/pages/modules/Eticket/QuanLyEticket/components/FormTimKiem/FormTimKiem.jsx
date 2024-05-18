@@ -1,4 +1,5 @@
 import { SearchOutlined } from "@ant-design/icons";
+import { faker } from "@faker-js/faker";
 import { useQuery } from "@tanstack/react-query";
 import {
   Button,
@@ -14,7 +15,7 @@ import React from "react";
 import { useConfigApi } from "../../../../../../components/api/useConfigApi";
 import "./FormTimKiem.scss";
 
-const FormTimKiem = ({ formValue, onFormSubmit }) => {
+const FormTimKiem = ({ onFormSubmit }) => {
   const { RangePicker } = DatePicker;
 
   const { get } = useConfigApi();
@@ -40,7 +41,7 @@ const FormTimKiem = ({ formValue, onFormSubmit }) => {
   const { data: listKhachHang } = useQuery({
     queryKey: ["listKhachHang"],
     queryFn: async () => {
-      const result = await get("khachhang/search");
+      const result = await get("khachhang/getActive");
 
       const dataList =
         result.DataList && result.DataList.length > 0 ? result.DataList : [];
@@ -59,7 +60,7 @@ const FormTimKiem = ({ formValue, onFormSubmit }) => {
   const { data: listNguoiDung } = useQuery({
     queryKey: ["listNguoiDung"],
     queryFn: async () => {
-      const result = await get("nguoidung/search");
+      const result = await get("nguoidung/getActive");
 
       const dataList =
         result.DataList && result.DataList.length > 0 ? result.DataList : [];
@@ -95,7 +96,6 @@ const FormTimKiem = ({ formValue, onFormSubmit }) => {
 
   const onFinish = (values) => {
     const result = {
-      ...formValue,
       MaTicket: values.MaTicket ?? "",
       TenTicket: values.TenTicket ?? "",
       MaKhachHang: values.MaKhachHang ?? "",
@@ -111,6 +111,7 @@ const FormTimKiem = ({ formValue, onFormSubmit }) => {
           ? values.ThoiGianTao[1].format("YYYY-MM-DD")
           : null,
       NguoiTao: values.NguoiTao ?? "",
+      id: faker.string.uuid(),
     };
 
     onFormSubmit(result);

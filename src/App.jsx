@@ -13,9 +13,10 @@ import {
   loginLoader,
   protectedLoader,
 } from "./components/auth/authProvider";
+import { useAuthInfo } from "./components/auth/useAuthInfo";
 import CustomLayout from "./components/layout/CustomLayout";
 import LoginPage from "./pages/modules/Auth/Login/Login";
-import SignInPage from "./pages/modules/Auth/SignIn/SignIn";
+import BaoCaoKPI from "./pages/modules/BaoCao/BaoCaoKPI/BaoCaoKPI";
 import QuanLyEticket from "./pages/modules/Eticket/QuanLyEticket/QuanLyEticket";
 import ChiTietEticket from "./pages/modules/Eticket/TaoMoiEticket/ChiTietEticket/ChiTietEticket";
 import TaoMoiEticket from "./pages/modules/Eticket/TaoMoiEticket/TaoMoiEticket";
@@ -24,6 +25,7 @@ import LoadingPage from "./pages/modules/KhachHang/Loading/LoadingPage";
 import QuanLyKhachHang from "./pages/modules/KhachHang/QuanLyKhachHang/QuanLyKhachHang";
 import TaoMoiKhachHang from "./pages/modules/KhachHang/TaoMoiKhachHang/TaoMoiKhachHang";
 import Page404 from "./pages/modules/Page404/Page404";
+import QuanLyNguoiDung from "./pages/modules/QuanTri/NguoiDung/QuanLyNguoiDung/QuanLyNguoiDung";
 import Welcome from "./pages/modules/Welcome/Welcome";
 
 function App() {
@@ -46,12 +48,6 @@ function App() {
           action: loginAction,
           loader: loginLoader,
           Component: LoginPage,
-        },
-        {
-          path: "signin",
-          action: loginAction,
-          loader: loginLoader,
-          Component: SignInPage,
         },
         {
           path: "dashboard",
@@ -85,7 +81,19 @@ function App() {
             },
             {
               path: "baocao",
-              element: <></>,
+              element: <BaoCaoKPI />,
+            },
+            {
+              path: "quantri",
+              loader: async () => {
+                const { currentUser } = useAuthInfo();
+                if (currentUser.FlagSysAdmin != "1") {
+                  return redirect("/dashboard"); // Redirect to home if not admin
+                }
+
+                return true;
+              },
+              element: <QuanLyNguoiDung />,
             },
             {
               path: "*",

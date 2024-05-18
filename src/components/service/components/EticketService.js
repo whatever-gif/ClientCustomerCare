@@ -3,6 +3,10 @@ import { useConfigApi } from "../../api/useConfigApi";
 export const useTicketService = () => {
   const { get } = useConfigApi();
 
+  const searchEticket = async (data) => {
+    return await get("eticket/search", data);
+  };
+
   const getByMaTicket = async (data) => {
     return await get("eticket/getByMaTicket", data);
   };
@@ -31,7 +35,12 @@ export const useTicketService = () => {
     return await get("eticket/deleteProcess", data);
   };
 
+  const reportKPI = async (data) => {
+    return await get("eticket/reportKPI", data);
+  };
+
   return {
+    searchEticket,
     getByMaTicket,
     createProcess,
     createTicket,
@@ -39,5 +48,6 @@ export const useTicketService = () => {
     updateTrangThaiTicket,
     deleteTicket,
     deleteProcess,
+    reportKPI,
   };
 };

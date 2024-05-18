@@ -42,19 +42,19 @@ const ChiTietKhachHang = () => {
       title: "Xác nhận xóa",
       content: "Bạn có chắc chắn muốn xóa khách hàng này không?",
       onOk: async () => {
-        // const resp = await api.deleteKhachHang({
-        //   MaKhachHang: MaKhachHang,
-        // });
-        // if (resp.Success) {
-        //   message.success("Xóa khách hàng thành công");
-        //   navigate("/dashboard/khachhang");
-        // } else {
-        //   if (resp.Error) {
-        //     message.error(resp.Error);
-        //   } else {
-        //     message.error("Có lỗi xảy ra");
-        //   }
-        // }
+        const resp = await api.deleteKhachHang({
+          MaKhachHang: MaKhachHang,
+        });
+        if (resp.Success) {
+          message.success("Xóa khách hàng thành công!");
+          handleBack();
+        } else {
+          if (resp.Error) {
+            message.error(resp.Error);
+          } else {
+            message.error("Có lỗi xảy ra");
+          }
+        }
       },
       okButtonProps: {
         style: {

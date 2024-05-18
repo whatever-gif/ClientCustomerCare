@@ -1,9 +1,0 @@
-{
-    "version": 3,
-    "mappings": "AAAA,AACE,MADI,CACJ,KAAK,CAAC;EACJ,SAAS,EAAE,KAAK;CACjB;;AAHH,AAKE,MALI,CAKJ,iBAAiB,CAAC;EAChB,KAAK,EAAE,IAAI;CACZ",
-    "sources": [
-        "FormTimKiem.scss"
-    ],
-    "names": [],
-    "file": "FormTimKiem.css"
-}

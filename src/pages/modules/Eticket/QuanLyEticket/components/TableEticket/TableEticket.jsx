@@ -183,6 +183,7 @@ const TableEticket = ({ data, refetch }) => {
       columns={columns}
       customToolbar={customToolbar}
       customRowActions={customRowActions}
+      height={300}
     />
   );
 };

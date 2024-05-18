@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Divider, Flex, Typography } from "antd";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useApiService } from "../../../../components/service/useApiService";
 import FormTimKiem from "./components/FormTimKiem/FormTimKiem";
 import TableEticket from "./components/TableEticket/TableEticket";
 
 const QuanLyEticket = () => {
+  const api = useApiService();
+
   const [formValue, setFormValue] = useState({
     MaTicket: "",
     TenTicket: "",
@@ -16,29 +18,18 @@ const QuanLyEticket = () => {
     ThoiGianTaoTu: null,
     ThoiGianTaoDen: null,
     NguoiTao: "",
+    id: "",
   });
 
   const { data, refetch } = useQuery({
-    queryKey: ["eticket"],
+    queryKey: ["nguoidung", formValue],
     queryFn: async () => {
-      return await axios
-        .post("https://localhost:7097/api/eticket/search", formValue, {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // Set the content type
-          },
-        })
-        .then((res) => res.data)
-        .catch((err) => {
-          console.log(err);
-        });
+      const resp = api.searchEticket(formValue);
+
+      return resp;
     },
     refetchOnWindowFocus: false,
-    enabled: false,
   });
-
-  useEffect(() => {
-    refetch();
-  }, [formValue]);
 
   return (
     <Flex vertical>
@@ -47,7 +38,7 @@ const QuanLyEticket = () => {
       </Typography.Text>
       <Divider style={{ margin: "12px 0" }} />
 
-      <FormTimKiem formValue={formValue} onFormSubmit={setFormValue} />
+      <FormTimKiem onFormSubmit={setFormValue} />
 
       <Divider style={{ margin: "0 0 12px 0" }} />
 

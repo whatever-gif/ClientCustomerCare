@@ -6,6 +6,7 @@ import {
   Col,
   DatePicker,
   Divider,
+  Flex,
   Form,
   Input,
   message,
@@ -474,30 +475,36 @@ const TaoMoiKhachHang = () => {
             <Col span={12}>
               <Form.Item label="Avatar" name="AnhDaiDien">
                 <Form.Item name="AnhDaiDienPreview" hidden></Form.Item>
-                <Avatar
-                  size={100}
-                  src={previewImage}
-                  style={{
-                    marginBottom: 10,
-                  }}
-                ></Avatar>
-                <Upload
-                  action="https://localhost:7097/api/upload"
-                  // listType="picture-card"
-                  maxCount={1}
-                  beforeUpload={(file) => {
-                    const isImage = file.type.startsWith("image/");
-                    if (!isImage) {
-                      message.error("You can only upload image files!");
-                    }
-                    return isImage;
-                  }}
-                  onChange={handlePreview}
-                  accept="image/*"
-                  showUploadList={false}
-                >
-                  <Button icon={<PlusOutlined />}>Chọn ảnh</Button>
-                </Upload>
+                <Flex vertical>
+                  <Avatar
+                    size={100}
+                    src={previewImage}
+                    style={{
+                      marginBottom: 10,
+                    }}
+                  ></Avatar>
+                  <Upload
+                    action="https://localhost:7097/api/upload"
+                    // listType="picture-card"
+                    maxCount={1}
+                    beforeUpload={(file) => {
+                      const isImage = file.type.startsWith("image/");
+                      if (!isImage) {
+                        message.error("You can only upload image files!");
+                      }
+                      return isImage;
+                    }}
+                    onChange={handlePreview}
+                    accept="image/*"
+                    showUploadList={false}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <Button icon={<PlusOutlined />}>Chọn ảnh</Button>
+                  </Upload>
+                </Flex>
               </Form.Item>
             </Col>
             <Col span={12}>

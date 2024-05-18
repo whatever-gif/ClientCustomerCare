@@ -1,14 +1,11 @@
 import { Button, Card, Flex, Typography } from "antd";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Logo from "../../../components/layout/header/Logo";
 import "../Welcome/Welcome.scss";
 
 const Welcome = () => {
   const navigate = useNavigate();
-
-  const handleLogin = () => {
-    navigate("/login");
-  };
 
   return (
     <div className="welcome-page">
@@ -26,7 +23,16 @@ const Welcome = () => {
           >
             Chào mừng quý khách đến với hệ thống
           </Typography.Text>
-          <Typography.Text className="logo">PA</Typography.Text>
+          <Flex
+            align="center"
+            gap={10}
+            style={{
+              margin: 10,
+            }}
+          >
+            <Logo />
+            <div className="logo-title">CustomerCare</div>
+          </Flex>
           <Typography.Text
             style={{
               fontSize: 20,
@@ -54,19 +60,9 @@ const Welcome = () => {
             >
               <Link to="/login">Đăng nhập</Link>
             </Button>
-            {/* <Button
-              type="primary"
-              style={{
-                fontWeight: 600,
-                backgroundColor: "#2B86C5",
-              }}
-            >
-              <Link to="/signin">Đăng ký</Link>
-            </Button> */}
           </Flex>
         </Flex>
       </Card>
-      {/* <Outlet /> */}
     </div>
   );
 };

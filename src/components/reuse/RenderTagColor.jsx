@@ -20,6 +20,9 @@ export const renderTagColor = ({ renderedCellValue }) => {
   if (renderedCellValue === "0") {
     return <Tag color="#bebebe">Không hoạt động</Tag>;
   }
+  if (renderedCellValue === "SysAdmin") {
+    return <Tag color="#6196A6">Quản trị hệ thống</Tag>;
+  }
 
   return <></>;
 };

@@ -73,6 +73,7 @@ const TableKhachHang = ({ data, refetch }) => {
     fieldSeparator: ",",
     decimalSeparator: ".",
     useKeysAsHeaders: true,
+    filename: "Danh sách khách hàng",
   });
 
   const handleExportData = () => {
@@ -176,7 +177,7 @@ const TableKhachHang = ({ data, refetch }) => {
       columns={columns}
       customToolbar={customToolbar}
       customRowActions={customRowActions}
-      height={400}
+      height={350}
     />
   );
 };

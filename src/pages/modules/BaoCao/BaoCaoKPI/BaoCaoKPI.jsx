@@ -1,13 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { Divider, Flex, Typography } from "antd";
 import React, { useState } from "react";
-import { useApiService } from "../../../../../components/service/useApiService";
+import { useApiService } from "../../../../components/service/useApiService";
 import FormTimKiem from "./components/FormTimKiem/FormTimKiem";
-import TableNguoiDung from "./components/TableNguoiDung/TableNguoiDung";
+import TableBaoCaoKPI from "./components/TableBaoCaoKPI/TableBaoCaoKPI";
 
-const QuanLyNguoiDung = () => {
+const BaoCaoKPI = () => {
   const [formValue, setFormValue] = useState({
-    Keyword: "",
+    MaPhanLoaiTicket: "",
+    ThoiGianTaoTu: null,
+    ThoiGianTaoDen: null,
+    NguoiTao: "",
     id: "",
   });
 
@@ -16,9 +19,7 @@ const QuanLyNguoiDung = () => {
   const { data, refetch } = useQuery({
     queryKey: ["nguoidung", formValue],
     queryFn: async () => {
-      const resp = api.getNguoiDung({
-        Keyword: formValue.Keyword,
-      });
+      const resp = api.reportKPI(formValue);
 
       return resp;
     },
@@ -32,13 +33,14 @@ const QuanLyNguoiDung = () => {
   return (
     <Flex vertical>
       <Typography.Text strong style={{ marginTop: 6 }}>
-        Quản lý người dùng
+        Báo cáo KPI xử lý eTicket
       </Typography.Text>
       <Divider style={{ margin: "12px 0" }} />
-      <FormTimKiem formValue={formValue} onFormSubmit={onFormSubmit} />
-      <TableNguoiDung data={data} refetch={refetch} />
+      <FormTimKiem onFormSubmit={onFormSubmit} />
+      <Divider style={{ margin: "0 0 12px 0" }} />
+      <TableBaoCaoKPI data={data} refetch={refetch} />
     </Flex>
   );
 };
 
-export default QuanLyNguoiDung;
+export default BaoCaoKPI;

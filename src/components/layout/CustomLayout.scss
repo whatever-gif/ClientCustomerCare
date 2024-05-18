@@ -62,5 +62,17 @@
     padding-inline: 48px;
     overflow: hidden;
     height: calc(100vh - 64px);
+    min-height: calc(100vh - 64px);
+
+    &.dashboard {
+      background-image: url("https://img.freepik.com/premium-photo/clean-vector-illustration-team-presenting-design-blog-interesting-composition_941097-98716.jpg?w=1060");
+      background-repeat: no-repeat;
+      background-size: 100%;
+      background-position: center;
+    }
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
   }
 }

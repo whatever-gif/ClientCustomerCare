@@ -48,7 +48,7 @@ const QuaTrinhXuLy = forwardRef(({}, ref) => {
     const postRequest = {
       MaTicket: MaTicket,
       NoiDungXuLy: values.NoiDungXuLy,
-      NguoiXuLy: currentUser,
+      NguoiXuLy: currentUser.Email,
     };
 
     const resp = await api.createProcess({
@@ -108,15 +108,21 @@ const QuaTrinhXuLy = forwardRef(({}, ref) => {
     });
   };
 
+  console.log(list);
+
   const render = useMemo(() => {
     return list.map((item, index) => {
       return (
         <Card key={index}>
           <Flex align="center" gap={10} justify="space-between">
             <Flex gap={10} align="center">
-              <Avatar alt={item.TenNguoiXuLy}>
-                {item.TenNguoiXuLy ? item.TenNguoiXuLy[0] : null}
-              </Avatar>
+              {item.Avatar ? (
+                <Avatar src={item.Avatar} />
+              ) : (
+                <Avatar alt={item.TenNguoiXuLy}>
+                  {item.TenNguoiXuLy ? item.TenNguoiXuLy[0] : null}
+                </Avatar>
+              )}
               <Typography.Text strong>
                 {item.TenNguoiXuLy} - {String(item.ThoiGianXuLy)}
               </Typography.Text>
@@ -141,10 +147,11 @@ const QuaTrinhXuLy = forwardRef(({}, ref) => {
     <Flex
       vertical
       style={{
-        height: 450,
+        minHeight: 450,
+        height: 100,
         overflowY: "auto",
         overflowX: "hidden",
-        padding: "20px 10px",
+        padding: "20px 10px 100px 10px",
       }}
       gap={10}
     >

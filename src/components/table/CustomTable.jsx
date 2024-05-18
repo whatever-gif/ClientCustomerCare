@@ -1,3 +1,4 @@
+import { useIsFetching } from "@tanstack/react-query";
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -8,11 +9,13 @@ import { useConfigTable } from "../config/ConfigTable";
 const CustomTable = ({
   columns,
   data,
-  customToolbar,
-  customRowActions,
+  customToolbar = null,
+  customRowActions = null,
   height = 350,
 }) => {
   const { config } = useConfigTable();
+
+  const isFetching = useIsFetching();
 
   const table = useMaterialReactTable({
     columns: columns,
@@ -33,12 +36,12 @@ const CustomTable = ({
     },
     rowNumberDisplayMode: "original",
     getRowId: (row) => row.id,
-    renderTopToolbarCustomActions: customToolbar,
-    renderRowActions: customRowActions,
-    enableRowActions: true,
+    renderTopToolbarCustomActions: customToolbar ? customToolbar : null,
+    renderRowActions: customRowActions ? customRowActions : null,
+    enableRowActions: customRowActions ? true : false,
   });
 
-  return <MaterialReactTable table={table} />;
+  return !isFetching && <MaterialReactTable table={table} />;
 };
 
 export default CustomTable;

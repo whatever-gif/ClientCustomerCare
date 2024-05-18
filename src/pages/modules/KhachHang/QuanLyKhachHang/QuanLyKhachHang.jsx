@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Divider, Flex, Typography } from "antd";
-import { useEffect, useState } from "react";
-import { useConfigApi } from "../../../../components/api/useConfigApi";
+import React, { useState } from "react";
+import { useApiService } from "../../../../components/service/useApiService";
 import FormTimKiem from "./components/FormTimKiem/FormTimKiem";
 import TableKhachHang from "./components/TableKhachHang/TableKhachHang";
 
 const QuanLyKhachHang = () => {
-  const { get } = useConfigApi();
+  const api = useApiService();
 
   const [formValue, setFormValue] = useState({
     MaTicket: "",
@@ -18,20 +18,18 @@ const QuanLyKhachHang = () => {
     ThoiGianTaoTu: null,
     ThoiGianTaoDen: null,
     NguoiTao: "",
+    id: "",
   });
 
   const { data, refetch } = useQuery({
-    queryKey: ["eticket"],
+    queryKey: ["nguoidung", formValue],
     queryFn: async () => {
-      return get("khachhang/search", formValue);
+      const resp = api.getKhachHang(formValue);
+
+      return resp;
     },
     refetchOnWindowFocus: false,
-    enabled: false,
   });
-
-  useEffect(() => {
-    refetch();
-  }, [formValue]);
 
   return (
     <Flex vertical>
@@ -39,9 +37,8 @@ const QuanLyKhachHang = () => {
         Quản lý khách hàng
       </Typography.Text>
       <Divider style={{ margin: "12px 0" }} />
-      <FormTimKiem formValue={formValue} onFormSubmit={setFormValue} />
+      <FormTimKiem onFormSubmit={setFormValue} />
       <Divider style={{ margin: "0 0 12px 0" }} />
-
       <TableKhachHang data={data} refetch={refetch} />
     </Flex>
   );

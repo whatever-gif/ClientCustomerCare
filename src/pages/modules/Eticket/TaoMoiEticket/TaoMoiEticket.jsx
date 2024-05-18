@@ -15,11 +15,12 @@ import {
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import dayjs from "dayjs";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthInfo } from "../../../../components/auth/useAuthInfo";
 import { customizeRequiredMark } from "../../../../components/reuse/CustomRequire";
 import { useApiService } from "../../../../components/service/useApiService";
+import PopupThemMoiKhachHang from "./ChiTietEticket/components/popup/PopupThemMoiKhachHang";
 import { useEticketDataSource } from "./ChiTietEticket/components/Tabs/dataSource.js/useEticketDataSource";
 import "./components/TaoMoiEticket.scss";
 
@@ -37,6 +38,8 @@ const TaoMoiEticket = () => {
   });
 
   const api = useApiService();
+
+  const popupRef = useRef();
 
   const navigate = useNavigate();
   const { Type, MaTicket } = useParams();
@@ -169,6 +172,39 @@ const TaoMoiEticket = () => {
     }
   }, [Type, MaTicket]);
 
+  const handleOpenPopupThemMoiKhachHang = () => {
+    if (popupRef.current) {
+      popupRef.current?.show();
+    }
+  };
+
+  const onSuccess = (data) => {
+    form.setFieldValue("MaKhachHang", data.MaKhachHang);
+    form.setFieldValue(
+      "MaKhachHangCustom",
+      `${data.MaKhachHang} - ${data.TenKhachHang}`
+    );
+
+    form.setFieldsValue({
+      ListKhachHang: [
+        {
+          key: data.MaKhachHang,
+          label: (
+            <Flex align="center" gap={10}>
+              {data.AnhDaiDien ? (
+                <Avatar src={data.AnhDaiDien} />
+              ) : (
+                <Avatar>{data.TenKhachHang[0]}</Avatar>
+              )}
+              {data.MaKhachHang} - {data.TenKhachHang}
+            </Flex>
+          ),
+          value: `${data.MaKhachHang} - ${data.TenKhachHang}`,
+        },
+      ],
+    });
+  };
+
   return (
     <Form
       form={form}
@@ -284,7 +320,9 @@ const TaoMoiEticket = () => {
                   form.setFieldValue("MaKhachHangCustom", value)
                 }
               />
-              <Button type="primary">Thêm mới</Button>
+              <Button type="primary" onClick={handleOpenPopupThemMoiKhachHang}>
+                Thêm mới
+              </Button>
             </Flex>
           </Form.Item>
         </Col>
@@ -320,6 +358,8 @@ const TaoMoiEticket = () => {
           </Form.Item>
         </Col>
       </Row>
+
+      <PopupThemMoiKhachHang ref={popupRef} onSuccess={onSuccess} />
     </Form>
   );
 };
