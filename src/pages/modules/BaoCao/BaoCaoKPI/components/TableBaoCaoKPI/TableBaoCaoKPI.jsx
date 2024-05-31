@@ -7,8 +7,10 @@ import React, { useMemo } from "react";
 import CustomTable from "../../../../../../components/table/CustomTable";
 
 const TableBaoCaoKPI = ({ data, refetch }) => {
+  // Sử dụng hook useIsFetching để kiểm tra trạng thái fetching
   const isFetching = useIsFetching();
 
+  // Định nghĩa các cột của bảng
   const columns = useMemo(
     () => [
       {
@@ -51,6 +53,7 @@ const TableBaoCaoKPI = ({ data, refetch }) => {
     []
   );
 
+  // Cấu hình cho việc xuất dữ liệu ra file CSV
   const csvConfig = mkConfig({
     fieldSeparator: ",",
     decimalSeparator: ".",
@@ -58,6 +61,7 @@ const TableBaoCaoKPI = ({ data, refetch }) => {
     filename: "Báo cáo KPI xử lý eTicket",
   });
 
+  // Hàm xử lý khi người dùng muốn xuất dữ liệu ra file CSV
   const handleExportData = () => {
     const csv = generateCsv(csvConfig)(data?.DataList ?? []);
     if (csv) {
@@ -68,6 +72,7 @@ const TableBaoCaoKPI = ({ data, refetch }) => {
     }
   };
 
+  // Custom toolbar cho bảng
   const customToolbar = () => {
     return (
       <Flex gap={10}>
@@ -83,6 +88,7 @@ const TableBaoCaoKPI = ({ data, refetch }) => {
     );
   };
 
+  // Tính toán tỷ lệ phần trăm
   const resultPercent = data?.DataList
     ? data.DataList.reduce(
         (prev, current) => {
@@ -103,15 +109,18 @@ const TableBaoCaoKPI = ({ data, refetch }) => {
         closed: 0,
       };
 
+  // Tính toán tỷ lệ đáp ứng
   const solved =
     ((resultPercent.solved / resultPercent.total) * 100).toFixed(2) ?? 0;
 
+  // Tính toán tỷ lệ không đáp ứng
   const notSolved =
     (
       ((resultPercent.total - resultPercent.solved) / resultPercent.total) *
       100
     ).toFixed(2) ?? 0;
 
+  // Cấu hình cho biểu đồ Pie
   const config = {
     data: [
       {

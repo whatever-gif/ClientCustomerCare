@@ -21,7 +21,7 @@ import { useAuthInfo } from "../../../../components/auth/useAuthInfo";
 import { customizeRequiredMark } from "../../../../components/reuse/CustomRequire";
 import { useApiService } from "../../../../components/service/useApiService";
 import PopupThemMoiKhachHang from "./ChiTietEticket/components/popup/PopupThemMoiKhachHang";
-import { useEticketDataSource } from "./ChiTietEticket/components/Tabs/dataSource.js/useEticketDataSource";
+import { useEticketDataSource } from "./ChiTietEticket/components/Tabs/dataSource/useEticketDataSource";
 import "./components/TaoMoiEticket.scss";
 
 const TaoMoiEticket = () => {
@@ -30,30 +30,32 @@ const TaoMoiEticket = () => {
   const optionsKhachHang = Form.useWatch("ListKhachHang", {
     form,
     preserve: true,
-  });
+  }); // Sử dụng hook Form.useWatch để theo dõi thay đổi của ListKhachHang
 
   const maKhachHangCustom = Form.useWatch("MaKhachHangCustom", {
     form,
     preserve: true,
-  });
+  }); // Sử dụng hook Form.useWatch để theo dõi thay đổi của MaKhachHangCustom
 
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
-  const popupRef = useRef();
+  const popupRef = useRef(); // Sử dụng hook useRef để tạo popupRef
 
-  const navigate = useNavigate();
-  const { Type, MaTicket } = useParams();
-  const { currentUser } = useAuthInfo();
+  const navigate = useNavigate(); // Sử dụng hook useNavigate để điều hướng trang
+  const { Type, MaTicket } = useParams(); // Lấy Type và MaTicket từ url
+  const { currentUser } = useAuthInfo(); // Sử dụng hook useAuthInfo để lấy thông tin người dùng hiện tại
 
-  const dataSource = useEticketDataSource();
+  const dataSource = useEticketDataSource(); // Sử dụng hook useEticketDataSource để lấy dữ liệu init
 
   const getDetail = async () => {
+    // Hàm getDetail sẽ được gọi khi Type == "update"
     const resp = await api.getByMaTicket({
       MaTicket: MaTicket,
-    });
+    }); // Gọi API để lấy dữ liệu chi tiết ticket
 
     if (resp && resp.Success) {
-      const data = resp.Data.Eticket;
+      // Kiểm tra nếu có dữ liệu trả về
+      const data = resp.Data.Eticket; // Lấy dữ liệu ticket từ response
       form.setFieldsValue({
         MaTicket: data.MaTicket,
         MaTrangThaiTicket: data.MaTrangThaiTicket,
@@ -66,6 +68,7 @@ const TaoMoiEticket = () => {
           : null,
         NguoiTao: currentUser.Email,
         ListKhachHang: [
+          // Set giá trị cho ListKhachHang
           {
             key: data.MaKhachHang,
             label: (
@@ -77,15 +80,17 @@ const TaoMoiEticket = () => {
             value: `${data.MaKhachHang} - ${data.TenKhachHang}`,
           },
         ],
-        MaKhachHangCustom: `${data.MaKhachHang} - ${data.TenKhachHang}`,
-      });
+        MaKhachHangCustom: `${data.MaKhachHang} - ${data.TenKhachHang}`, // Set giá trị cho MaKhachHangCustom
+      }); // Set giá trị cho form
     } else {
       message.error(resp.Error);
     }
   };
 
   const onFinish = async (values) => {
+    // Hàm onFinish sẽ được gọi khi form được submit
     const postRequest = {
+      // Tạo đối tượng postRequest từ dữ liệu form
       MaTicket: values.MaTicket,
       MaTrangThaiTicket: values.MaTrangThaiTicket,
       TenTicket: values.TenTicket,
@@ -99,7 +104,9 @@ const TaoMoiEticket = () => {
     };
 
     if (Type == "update") {
+      // Kiểm tra nếu Type == "update"
       const resp = await api.updateTicket({
+        // Gọi API để cập nhật ticket
         strJson: JSON.stringify({
           ...postRequest,
           NguoiCapNhat: postRequest.NguoiTao,
@@ -107,6 +114,7 @@ const TaoMoiEticket = () => {
       });
 
       if (resp.Success) {
+        // Kiểm tra nếu thành công
         message.success("Cập nhật ticket thành công!", 2, () =>
           navigate("/dashboard/eticket")
         );
@@ -116,34 +124,40 @@ const TaoMoiEticket = () => {
     }
 
     if (Type == "add") {
+      // Kiểm tra nếu Type == "add"
       const resp = await api.createTicket({
+        // Gọi API để tạo mới ticket
         strJson: JSON.stringify(postRequest),
       });
 
       if (resp.Success) {
-        message.success("Tạo mới ticket thành công!", 2, () =>
-          navigate("/dashboard/eticket")
+        // Kiểm tra nếu thành công
+        message.success(
+          "Tạo mới ticket thành công!",
+          2,
+          () => navigate("/dashboard/eticket") // Hiển thị thông báo thành công và điều hướng trang
         );
       } else {
-        message.error("Tạo mới ticket thất bại!");
+        message.error("Tạo mới ticket thất bại!"); // Hiển thị thông báo lỗi
       }
     }
   };
 
-  const onFinishFailed = () => {};
-
-  const { RangePicker } = DatePicker;
-
   const handleBack = () => {
+    // Hàm handleBack sẽ được gọi khi click vào nút quay lại
     navigate("/dashboard/eticket");
   };
 
   const handleSearchKhachHang = async (value) => {
+    // Hàm handleSearchKhachHang sẽ được gọi khi tìm kiếm khách hàng
     const response = await api.getKhachHang({
+      // Gọi API để lấy danh sách khách hàng
       TenKhachHang: value,
     });
     if (response.Success) {
+      // Kiểm tra nếu thành công
       const result = response.DataList.map((item) => ({
+        // Lấy dữ liệu từ response
         key: item.MaKhachHang,
         label: (
           <Flex align="center" gap={10}>
@@ -158,27 +172,30 @@ const TaoMoiEticket = () => {
         value: `${item.MaKhachHang} - ${item.TenKhachHang}`,
       }));
 
-      form.setFieldValue("ListKhachHang", result);
+      form.setFieldValue("ListKhachHang", result); // Set giá trị cho ListKhachHang
     }
   };
 
   const handleClearKhachHang = () => {
-    form.setFieldValue("MaKhachHangCustom", null);
+    form.setFieldValue("MaKhachHangCustom", null); // Set giá trị cho MaKhachHangCustom
   };
 
   useEffect(() => {
     if (MaTicket && Type == "update") {
-      getDetail();
+      // Kiểm tra nếu MaTicket và Type == "update"
+      getDetail(); // Gọi hàm getDetail
     }
-  }, [Type, MaTicket]);
+  }, [Type, MaTicket]); // Sử dụng hook useEffect để gọi hàm getDetail khi Type == "update"
 
   const handleOpenPopupThemMoiKhachHang = () => {
+    // Hàm handleOpenPopupThemMoiKhachHang sẽ được gọi khi click vào nút Thêm mới
     if (popupRef.current) {
       popupRef.current?.show();
     }
   };
 
   const onSuccess = (data) => {
+    // Hàm onSuccess sẽ được gọi khi thêm mới khách hàng thành công
     form.setFieldValue("MaKhachHang", data.MaKhachHang);
     form.setFieldValue(
       "MaKhachHangCustom",
@@ -215,7 +232,6 @@ const TaoMoiEticket = () => {
         MaKhachHang: null,
       }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       autoComplete="off"
       labelWrap
       colon={false}

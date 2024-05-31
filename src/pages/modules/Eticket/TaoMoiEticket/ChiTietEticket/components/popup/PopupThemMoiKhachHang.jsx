@@ -24,10 +24,16 @@ import { customizeRequiredMark } from "../../../../../../../components/reuse/Cus
 import { useApiService } from "../../../../../../../components/service/useApiService";
 import { useKhachHangDataSource } from "../../../../../KhachHang/TaoMoiKhachHang/components/dataSource/useKhachHangDataSource";
 
+// Component PopupThemMoiKhachHang
+// Component này dùng để hiển thị popup thêm mới khách hàng
+// Popup này sẽ hiển thị khi người dùng nhấn vào nút thêm mới khách hàng
+// Popup này sẽ chứa form để người dùng nhập thông tin khách hàng
+// forwardRef dùng để truy cập vào các phương thức của component PopupThemMoiKhachHang từ bên ngoài
 const PopupThemMoiKhachHang = forwardRef(({ onSuccess }, ref) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // Sử dụng useState để lưu trạng thái mở/đóng của modal
 
   useImperativeHandle(ref, () => ({
+    // Sử dụng useImperativeHandle để truy cập vào các phương thức của component PopupThemMoiKhachHang từ bên ngoài
     show: () => {
       setOpen(true);
     },
@@ -36,29 +42,31 @@ const PopupThemMoiKhachHang = forwardRef(({ onSuccess }, ref) => {
     },
   }));
 
+  // Hàm handleClose sẽ được gọi khi người dùng nhấn vào nút đóng hoặc nút hủy
   const handleClose = () => {
     setOpen(false);
     form.resetFields();
   };
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm(); // Sử dụng hook Form.useForm để tạo form
 
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
-  const { currentUser } = useAuthInfo();
+  const { currentUser } = useAuthInfo(); // Sử dụng hook useAuthInfo để lấy thông tin người dùng hiện tại
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Sử dụng hook useNavigate để điều hướng trang
 
-  const { RangePicker } = DatePicker;
+  const { RangePicker } = DatePicker; // Lấy component RangePicker từ DatePicker
 
-  const listTinhTP = Form.useWatch("ListTinhTP", { form, preserve: true });
+  const listTinhTP = Form.useWatch("ListTinhTP", { form, preserve: true }); // Sử dụng hook Form.useWatch để lấy giá trị của ListTinhTP từ form
   const listQuanHuyen = Form.useWatch("ListQuanHuyen", {
     form,
     preserve: true,
-  });
-  const listPhuongXa = Form.useWatch("ListPhuongXa", { form, preserve: true });
+  }); // Sử dụng hook Form.useWatch để lấy giá trị của ListQuanHuyen từ form
+  const listPhuongXa = Form.useWatch("ListPhuongXa", { form, preserve: true }); // Sử dụng hook Form.useWatch để lấy giá trị của ListPhuongXa từ form
 
   const onFinish = async (values) => {
+    // Tạo request để gửi lên server
     const postRequest = {
       MaKhachHang: values.MaKhachHang,
       TenKhachHang: values.TenKhachHang,
@@ -82,59 +90,72 @@ const PopupThemMoiKhachHang = forwardRef(({ onSuccess }, ref) => {
 
     const resp = await api.createKhachHang({
       strJson: JSON.stringify(postRequest),
-    });
+    }); // Gọi API để tạo mới khách hàng
 
     if (resp.Success) {
-      message.success("Tạo mới khách hàng thành công!");
+      message.success("Tạo mới khách hàng thành công!"); // Hiển thị thông báo thành công
 
+      // Kiểm tra xem có hàm onSuccess được truyền vào không
       if (onSuccess) {
-        onSuccess(resp.Data);
+        onSuccess(resp.Data); // Gọi hàm onSuccess và truyền dữ liệu trả về từ API vào
       }
 
+      // Đóng modal
       handleClose();
     } else {
-      message.error("Tạo mới khách hàng thất bại!");
+      message.error("Tạo mới khách hàng thất bại!"); // Hiển thị thông báo lỗi
     }
   };
 
   // Khởi tạo các dataSource liên quan
   const dataSource = useKhachHangDataSource();
 
+  // Hàm handleFormValuesChange sẽ được gọi khi giá trị của form thay đổi
   const handleFormValuesChange = async (changedValues, allValues) => {
     if (changedValues.MaQuocGia) {
+      // Kiểm tra xem giá trị MaQuocGia có thay đổi không
       await api.getTinhTPByMaQuocGia(changedValues.MaQuocGia).then((res) => {
+        // Gọi API lấy danh sách tỉnh/TP
         if (res && res.DataList) {
+          // Kiểm tra xem API có trả về dữ liệu không
           const result = res.DataList.map((item) => {
+            // Xử lý dữ liệu trả về
             return {
               label: item.TenTinhTp,
               value: item.MaTinhTp,
             };
           });
-          form.setFieldValue("ListTinhTP", result);
+          form.setFieldValue("ListTinhTP", result); // Set giá trị ListTinhTP vào form
         }
       });
     }
 
+    // Kiểm tra xem giá trị MaTinhTp có thay đổi không
     if (changedValues.MaTinhTp) {
       // Gọi API lấy danh sách quận/huyện
       await api.getQuanHuyenByMaTinhTP(changedValues.MaTinhTp).then((res) => {
+        // Gọi API lấy danh sách quận/huyện
         if (res && res.DataList) {
+          // Kiểm tra xem API có trả về dữ liệu không
           const result = res.DataList.map((item) => {
+            // Xử lý dữ liệu trả về
             return {
               label: item.TenQuanHuyen,
               value: item.MaQuanHuyen,
             };
           });
-          form.setFieldValue("ListQuanHuyen", result);
+          form.setFieldValue("ListQuanHuyen", result); // Set giá trị ListQuanHuyen vào form
         }
       });
     }
 
+    // Kiểm tra xem giá trị MaQuanHuyen có thay đổi không
     if (changedValues.MaQuanHuyen) {
       // Gọi API lấy danh sách xã/phường
       await api
         .getPhuongXaByMaQuanHuyen(changedValues.MaQuanHuyen)
         .then((res) => {
+          // Gọi API lấy danh sách xã/phường
           if (res && res.DataList) {
             const result = res.DataList.map((item) => {
               return {
@@ -142,12 +163,13 @@ const PopupThemMoiKhachHang = forwardRef(({ onSuccess }, ref) => {
                 value: item.MaPhuongXa,
               };
             });
-            form.setFieldValue("ListPhuongXa", result);
+            form.setFieldValue("ListPhuongXa", result); // Set giá trị ListPhuongXa vào form
           }
         });
     }
   };
 
+  // Hàm handleClearQuocGia sẽ được gọi khi người dùng nhấn vào nút xóa giá trị của Quốc gia
   const handleClearQuocGia = () => {
     form.setFieldsValue({
       MaQuocGia: null,
@@ -160,6 +182,7 @@ const PopupThemMoiKhachHang = forwardRef(({ onSuccess }, ref) => {
     });
   };
 
+  // Hàm handleClearTinhTP sẽ được gọi khi người dùng nhấn vào nút xóa giá trị của Tỉnh/TP
   const handleClearTinhTP = () => {
     form.setFieldsValue({
       MaTinhTp: null,
@@ -170,6 +193,7 @@ const PopupThemMoiKhachHang = forwardRef(({ onSuccess }, ref) => {
     });
   };
 
+  // Hàm handleClearQuanHuyen sẽ được gọi khi người dùng nhấn vào nút xóa giá trị của Quận/Huyện
   const handleClearQuanHuyen = () => {
     form.setFieldsValue({
       MaQuanHuyen: null,
@@ -178,18 +202,17 @@ const PopupThemMoiKhachHang = forwardRef(({ onSuccess }, ref) => {
     });
   };
 
+  // Hàm handleClearPhuongXa sẽ được gọi khi người dùng nhấn vào nút xóa giá trị của Xã/Phường
   const handleClearPhuongXa = () => {
     form.setFieldsValue({
       MaPhuongXa: null,
     });
   };
 
-  const handleBack = () => {
-    navigate("/dashboard/khachhang");
-  };
-
+  // Sử dụng hook useWatch để lấy giá trị của AnhDaiDienPreview từ form
   const previewImage = useWatch("AnhDaiDienPreview", { form, preserve: true });
 
+  // Hàm handlePreview sẽ được gọi khi người dùng chọn ảnh
   const handlePreview = (info) => {
     if (info.file.response?.Data?.FilePath) {
       form.setFieldsValue({
@@ -198,6 +221,7 @@ const PopupThemMoiKhachHang = forwardRef(({ onSuccess }, ref) => {
     }
   };
 
+  // Hàm handleSave sẽ được gọi khi người dùng nhấn vào nút Thêm mới
   const handleSave = () => {
     form.submit();
   };

@@ -1,4 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
+import { customizeRequiredMark } from "@components/reuse/CustomRequire";
 import {
   Avatar,
   Button,
@@ -17,46 +18,54 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { customizeRequiredMark } from "../../../../../components/reuse/CustomRequire";
 import { useApiService } from "../../../../../components/service/useApiService";
 
 const PopupNguoiDung = forwardRef(({ refetch }, ref) => {
+  // Sử dụng hook forwardRef để truy cập ref từ component cha
   useImperativeHandle(ref, () => ({
+    // Sử dụng hook useImperativeHandle để truy cập ref từ component cha
     show: (data, type) => {
+      // Hàm show sẽ được gọi từ component cha
       setOpen(true);
       setType(type);
       // set form
-      form.setFieldsValue({ ...data, AvatarPreview: data.Avatar });
+      form.setFieldsValue({ ...data, AvatarPreview: data.Avatar }); // Set giá trị cho form
     },
   }));
 
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
-  const uploadRef = useRef();
+  const uploadRef = useRef(); // Sử dụng hook useRef để lưu trữ ref của Upload
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm(); // Sử dụng hook Form.useForm để tạo form
 
-  const [open, setOpen] = useState(false);
-  const [type, setType] = useState("add");
+  const [open, setOpen] = useState(false); // Sử dụng hook useState để lưu trữ trạng thái của modal
+  const [type, setType] = useState("add"); // Sử dụng hook useState để lưu trữ loại của modal
 
   const handleClose = () => {
-    setOpen(false);
-    setType("");
-    form.resetFields();
+    // Hàm đóng modal
+    setOpen(false); // Đóng modal
+    setType(""); // Xóa loại modal
+    form.resetFields(); // Reset form
   };
 
   const handlePreview = (info) => {
+    // Hàm xử lý khi chọn ảnh
     if (info.file.response?.Data?.FilePath) {
+      // Kiểm tra nếu có đường dẫn ảnh
       form.setFieldsValue({
-        AvatarPreview: info.file.response?.Data?.FilePath,
+        // Set giá trị cho form
+        AvatarPreview: info.file.response?.Data?.FilePath, // Set giá trị cho trường AvatarPreview
       });
     }
   };
 
-  const previewImage = useWatch("AvatarPreview", { form, preserve: true });
+  const previewImage = useWatch("AvatarPreview", { form, preserve: true }); // Sử dụng hook useWatch để lấy giá trị của trường AvatarPreview
 
   const onFinish = async (values) => {
+    // Hàm xử lý khi form được submit
     const postRequset = {
+      // Tạo đối tượng postRequset từ dữ liệu form
       Email: values.Email,
       TenNguoiDung: values.TenNguoiDung,
       Avatar: values.AvatarPreview,
@@ -67,11 +76,14 @@ const PopupNguoiDung = forwardRef(({ refetch }, ref) => {
     };
 
     if (type == "add") {
+      // Kiểm tra loại modal
       const resp = await api.createNguoiDung({
+        // Gọi API để thêm mới người dùng
         strJson: JSON.stringify(postRequset),
       });
 
       if (resp.Success) {
+        // Kiểm tra kết quả trả về
         message.success("Thêm mới người dùng thành công!");
         handleClose();
         refetch();
@@ -81,8 +93,9 @@ const PopupNguoiDung = forwardRef(({ refetch }, ref) => {
     }
 
     if (type == "update") {
+      // Kiểm tra loại modal
       const resp = await api.updateNguoiDung({
-        strJson: JSON.stringify(postRequset),
+        strJson: JSON.stringify(postRequset), // Gọi API để cập nhật người dùng
       });
 
       if (resp.Success) {
@@ -104,6 +117,9 @@ const PopupNguoiDung = forwardRef(({ refetch }, ref) => {
       onOk={() => form.submit()}
       okButtonProps={{
         hidden: type == "detail",
+        style: {
+          display: type == "detail" ? "none" : "inline-block",
+        },
       }}
     >
       <Flex vertical>
@@ -151,7 +167,7 @@ const PopupNguoiDung = forwardRef(({ refetch }, ref) => {
           <Form.Item
             label="Email"
             name="Email"
-            required
+            required={type != "detail"}
             rules={[
               {
                 required: true,
@@ -163,12 +179,12 @@ const PopupNguoiDung = forwardRef(({ refetch }, ref) => {
               },
             ]}
           >
-            <Input readOnly={type == "detail"} />
+            <Input disabled={type != "add"} />
           </Form.Item>
           <Form.Item
             label="Tên người dùng"
             name="TenNguoiDung"
-            required
+            required={type != "detail"}
             rules={[
               {
                 required: true,
@@ -176,12 +192,12 @@ const PopupNguoiDung = forwardRef(({ refetch }, ref) => {
               },
             ]}
           >
-            <Input readOnly={type == "detail"} />
+            <Input disabled={type != "add"} />
           </Form.Item>
           <Form.Item
             label="Số điện thoại"
             name="SoDienThoai"
-            required
+            required={type != "detail"}
             rules={[
               {
                 required: true,
@@ -193,12 +209,13 @@ const PopupNguoiDung = forwardRef(({ refetch }, ref) => {
               },
             ]}
           >
-            <Input readOnly={type == "detail"} />
+            <Input disabled={type != "add"} />
           </Form.Item>
           <Form.Item
             label="Mật khẩu"
             name="MatKhau"
-            required
+            hidden={type == "detail"}
+            required={type != "detail"}
             rules={[
               {
                 required: true,

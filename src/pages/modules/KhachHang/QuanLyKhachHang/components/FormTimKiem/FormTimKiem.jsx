@@ -6,18 +6,14 @@ import "./FormTimKiem.scss";
 import { useDataSource } from "./components/useDataSource";
 
 const FormTimKiem = ({ onFormSubmit }) => {
-  const { RangePicker } = DatePicker;
+  const { RangePicker } = DatePicker; // Lấy component RangePicker từ DatePicker
 
-  const dataSource = useDataSource();
+  const dataSource = useDataSource(); // Sử dụng hook useDataSource để lấy dữ liệu init
 
   const onFinish = (values) => {
+    // Hàm onFinish sẽ được gọi khi form được submit
     const result = {
-      MaTicket: values.MaTicket ?? "",
-      TenTicket: values.TenTicket ?? "",
       MaKhachHang: values.MaKhachHang ?? "",
-      MaPhanLoaiTicket: values.MaPhanLoaiTicket ?? "",
-      MaTrangThaiTicket: values.MaTrangThaiTicket ?? "",
-      FlagQuaHanXuLy: values.FlagQuaHanXuLy == true ? 1 : 0,
       ThoiGianTaoTu:
         values.ThoiGianTao && values.ThoiGianTao[0]
           ? values.ThoiGianTao[0].format("YYYY-MM-DD")
@@ -27,13 +23,18 @@ const FormTimKiem = ({ onFormSubmit }) => {
           ? values.ThoiGianTao[1].format("YYYY-MM-DD")
           : null,
       NguoiTao: values.NguoiTao ?? "",
+      Email: values.Email ?? "",
+      TenKhachHang: values.TenKhachHang ?? "",
+      SoDienThoai: values.SoDienThoai ?? "",
       id: faker.string.uuid(),
     };
 
-    onFormSubmit(result);
+    onFormSubmit(result); // Gọi hàm onFormSubmit và truyền đối tượng result vào
   };
 
-  const onFinishFailed = (errorInfo) => {};
+  // hàm này để khi ta tìm kiếm nhanh trong select box sẽ không biệt hoa - thường
+  const filterOption = (input, option) =>
+    (option?.label ?? "").toLowerCase().includes(input.toLowerCase()); // Hàm filterOption sẽ được gọi khi tìm kiếm
 
   return (
     <Form
@@ -42,7 +43,6 @@ const FormTimKiem = ({ onFormSubmit }) => {
         remember: true,
       }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       autoComplete="off"
       labelWrap
       colon={false}
@@ -65,14 +65,14 @@ const FormTimKiem = ({ onFormSubmit }) => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item label="Ngày tạo" name="NgayTao">
+          <Form.Item label="Ngày tạo" name="ThoiGianTao">
             <RangePicker width={"100%"} />
           </Form.Item>
           <Form.Item label="Người tạo" name="NguoiTao">
             <Select
               options={dataSource.ListNguoiDung}
               allowClear
-              filterOption
+              filterOption={filterOption}
               showSearch
             ></Select>
           </Form.Item>

@@ -6,29 +6,29 @@ import FormTimKiem from "./components/FormTimKiem/FormTimKiem";
 import TableKhachHang from "./components/TableKhachHang/TableKhachHang";
 
 const QuanLyKhachHang = () => {
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
   const [formValue, setFormValue] = useState({
-    MaTicket: "",
-    TenTicket: "",
+    // Sử dụng hook useState để lưu trữ giá trị của form
     MaKhachHang: "",
-    MaPhanLoaiTicket: "",
-    MaTrangThaiTicket: "",
-    FlagQuaHanXuLy: "0",
     ThoiGianTaoTu: null,
     ThoiGianTaoDen: null,
     NguoiTao: "",
+    Email: "",
+    TenKhachHang: "",
+    SoDienThoai: "",
     id: "",
   });
 
   const { data, refetch } = useQuery({
-    queryKey: ["nguoidung", formValue],
+    // Sử dụng hook useQuery để lấy dữ liệu từ server
+    queryKey: ["khachhang", formValue],
     queryFn: async () => {
-      const resp = api.getKhachHang(formValue);
+      const resp = api.getKhachHang(formValue); // Gọi API để lấy dữ liệu khách hàng
 
-      return resp;
+      return resp; // Trả về dữ liệu từ response
     },
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false, // Không làm mới dữ liệu khi cửa sổ được focus
   });
 
   return (

@@ -29,7 +29,17 @@ import QuanLyNguoiDung from "./pages/modules/QuanTri/NguoiDung/QuanLyNguoiDung/Q
 import Welcome from "./pages/modules/Welcome/Welcome";
 
 function App() {
+  // createBrowserRouter là một hàm tạo router
+  // Hàm này nhận vào một mảng các route
+  // Mỗi route sẽ có các thuộc tính như id, path, loader, Component, children
+  // id: id của route
+  // path: đường dẫn của route
+  // loader: hàm loader sẽ được gọi khi route được truy cập
+  // Component: component sẽ được render khi route được truy cập
+  // children: mảng các route con
+
   const router = createBrowserRouter([
+    // Tạo router
     {
       id: "root",
       path: "/",
@@ -86,8 +96,10 @@ function App() {
             {
               path: "quantri",
               loader: async () => {
-                const { currentUser } = useAuthInfo();
+                // Loader for admin route
+                const { currentUser } = useAuthInfo(); // Get current user
                 if (currentUser.FlagSysAdmin != "1") {
+                  // Check if user is admin
                   return redirect("/dashboard"); // Redirect to home if not admin
                 }
 
@@ -122,7 +134,7 @@ function App() {
     },
   ]);
 
-  return <RouterProvider router={router} fallbackElement={<LoadingPage />} />;
+  return <RouterProvider router={router} fallbackElement={<LoadingPage />} />; // Render router
 }
 
 export default App;

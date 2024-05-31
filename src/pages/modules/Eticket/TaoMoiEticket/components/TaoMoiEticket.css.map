@@ -1,9 +1,0 @@
-{
-    "version": 3,
-    "mappings": "AAAA,AACE,cADY,CACZ,KAAK,CAAC;EACJ,SAAS,EAAE,KAAK;CACjB;;AAHH,AAKE,cALY,CAKZ,iBAAiB,CAAC;EAChB,KAAK,EAAE,IAAI;CACZ;;AAPH,AAUI,cAVU,CASZ,cAAc,CACZ,cAAc,CAAC;EACb,MAAM,EAAE,CAAC;CACV;;AAZL,AAcI,cAdU,CASZ,cAAc,CAKZ,yBAAyB,CAAC;EACxB,OAAO,EAAE,IAAI;EACb,WAAW,EAAE,MAAM;CACpB;;AAjBL,AAmBE,cAnBY,CAmBZ,eAAe,CAAC;EACd,MAAM,EAAE,MAAM;CACf",
-    "sources": [
-        "TaoMoiEticket.scss"
-    ],
-    "names": [],
-    "file": "TaoMoiEticket.css"
-}

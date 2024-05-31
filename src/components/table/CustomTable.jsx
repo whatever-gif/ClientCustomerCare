@@ -12,33 +12,39 @@ const CustomTable = ({
   customToolbar = null,
   customRowActions = null,
   height = 350,
+  hiddenColumn = {}
 }) => {
-  const { config } = useConfigTable();
+    // Sử dụng hook useConfigTable để lấy config cho table
+  const { config } = useConfigTable(); 
 
+    // Sử dụng hook useIsFetching để kiểm tra xem có request nào đang được thực hiện hay không
   const isFetching = useIsFetching();
 
+    // Sử dụng hook useMaterialReactTable để tạo table
   const table = useMaterialReactTable({
     columns: columns,
     data:
-      data && data.DataList && data.DataList.length > 0 ? data.DataList : [],
-    muiTableContainerProps: {
+      data && data.DataList && data.DataList.length > 0 ? data.DataList : [], // Dữ liệu của table
+    muiTableContainerProps: { // Các prop cho container của table
       sx: {
         height: height,
       },
     },
-    ...config,
-    initialState: {
+    ...config,  // Sử dụng config từ useConfigTable
+    initialState: {  // Trạng thái ban đầu của table
       density: "compact",
       pagination: {
         pageIndex: 0,
         pageSize: 100,
       },
+      columnVisibility : hiddenColumn // Các cột bị ẩn
     },
-    rowNumberDisplayMode: "original",
-    getRowId: (row) => row.id,
-    renderTopToolbarCustomActions: customToolbar ? customToolbar : null,
-    renderRowActions: customRowActions ? customRowActions : null,
-    enableRowActions: customRowActions ? true : false,
+    rowNumberDisplayMode: "original", // Chế độ hiển thị số dòng
+    getRowId: (row) => row.id, // Hàm lấy id của dòng
+    renderTopToolbarCustomActions: customToolbar ? customToolbar : null, // Hàm render custom toolbar
+    renderRowActions: customRowActions ? customRowActions : null, // Hàm render custom row actions
+    enableRowActions: customRowActions ? true : false,  // Cho phép row actions hay không
+    
   });
 
   return !isFetching && <MaterialReactTable table={table} />;

@@ -6,32 +6,41 @@ import "./FormTimKiem.scss";
 import { useDataSource } from "./components/useDataSource";
 
 const FormTimKiem = ({ onFormSubmit }) => {
+  // Lấy component RangePicker từ DatePicker
   const { RangePicker } = DatePicker;
 
+  // Sử dụng hook useDataSource để lấy dữ liệu
   const dataSource = useDataSource();
 
+  // Hàm onFinish sẽ được gọi khi form được submit
   const onFinish = (values) => {
+    // Tạo đối tượng result từ dữ liệu form
     const result = {
+      // Lấy giá trị MaPhanLoaiTicket từ form, nếu không có thì mặc định là chuỗi rỗng
       MaPhanLoaiTicket: values.MaPhanLoaiTicket ?? "",
+      // Lấy giá trị ThoiGianTaoTu từ form, nếu không có thì mặc định là null
       ThoiGianTaoTu:
         values.ThoiGianTao && values.ThoiGianTao[0]
           ? values.ThoiGianTao[0].format("YYYY-MM-DD")
           : null,
+      // Lấy giá trị ThoiGianTaoDen từ form, nếu không có thì mặc định là null
       ThoiGianTaoDen:
         values.ThoiGianTao && values.ThoiGianTao[1]
           ? values.ThoiGianTao[1].format("YYYY-MM-DD")
           : null,
+      // Lấy giá trị NguoiTao từ form, nếu không có thì mặc định là chuỗi rỗng
       NguoiTao: values.NguoiTao ?? "",
+      // Tạo id ngẫu nhiên cho đối tượng result
       id: faker.string.uuid(),
     };
 
+    // Gọi hàm onFormSubmit và truyền đối tượng result vào
     onFormSubmit(result);
   };
 
-  const onFinishFailed = (errorInfo) => {};
-
+  // hàm này để khi ta tìm kiếm nhanh trong select box sẽ không biệt hoa - thường
   const filterOption = (input, option) =>
-    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+    (option?.label ?? "").toLowerCase().includes(input.toLowerCase()); // Hàm filterOption sẽ được gọi khi tìm kiếm
 
   return (
     <Form
@@ -40,7 +49,6 @@ const FormTimKiem = ({ onFormSubmit }) => {
         remember: true,
       }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       autoComplete="off"
       labelWrap
       colon={false}
@@ -51,7 +59,7 @@ const FormTimKiem = ({ onFormSubmit }) => {
             <Select
               options={dataSource.ListNguoiDung}
               allowClear
-              filterOption
+              filterOption={filterOption}
               showSearch
             ></Select>
           </Form.Item>
@@ -61,7 +69,7 @@ const FormTimKiem = ({ onFormSubmit }) => {
             <Select
               options={dataSource.ListPhanLoai}
               allowClear
-              filterOption
+              filterOption={filterOption}
               showSearch
             />
           </Form.Item>

@@ -5,16 +5,18 @@ import "./FormTimKiem.scss";
 
 const FormTimKiem = ({ formValue, onFormSubmit }) => {
   const onSearch = (value) => {
+    // Hàm này sẽ được gọi khi tìm kiếm
     const result = {
+      // Tạo đối tượng result từ dữ liệu form
       ...formValue,
       Keyword: value,
       id: faker.string.uuid(),
     };
 
-    onFormSubmit(result);
+    onFormSubmit(result); // Gọi hàm onFormSubmit và truyền đối tượng result vào
   };
 
-  const { Search } = Input;
+  const { Search } = Input; // Lấy component Search từ Input
 
   return (
     <Flex

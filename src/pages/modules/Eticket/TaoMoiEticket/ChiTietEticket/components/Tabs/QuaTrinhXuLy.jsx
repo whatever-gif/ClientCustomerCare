@@ -22,29 +22,39 @@ import { useParams } from "react-router-dom";
 import { useAuthInfo } from "../../../../../../../components/auth/useAuthInfo";
 import { useApiService } from "../../../../../../../components/service/useApiService";
 
+// Component QuaTrinhXuLy sẽ hiển thị danh sách quá trình xử lý của ticket
+// forwardRef để truy cập các hàm của component từ bên ngoài
+// Sử dụng hook useImperativeHandle để tạo hàm setList để cập nhật danh sách quá trình xử lý
 const QuaTrinhXuLy = forwardRef(({}, ref) => {
   useImperativeHandle(ref, () => ({
+    // Sử dụng hook useImperativeHandle để tạo hàm setList để cập nhật danh sách quá trình xử lý
     setList: (data) => {
-      setList(data);
+      if (data) {
+        setList(data);
+      }
     },
   }));
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm(); // Sử dụng hook Form.useForm để tạo form
 
-  const { MaTicket } = useParams();
+  const { MaTicket } = useParams(); // Lấy MaTicket từ url
 
-  const { currentUser } = useAuthInfo();
+  const { currentUser } = useAuthInfo(); // Sử dụng hook useAuthInfo để lấy thông tin người dùng hiện tại
 
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
-  const [list, setList] = useState([]);
+  const [list, setList] = useState([]); // Sử dụng hook useState để lưu trữ danh sách quá trình xử lý
 
   const onFinish = async (values) => {
+    // Hàm onFinish sẽ được gọi khi form được submit
+
     if (!values.NoiDungXuLy) {
-      message.error("Vui lòng nhập Nội dung Ghi chú trước khi Lưu");
-      return;
+      // Kiểm tra nếu không có nội dung xử lý
+      message.error("Vui lòng nhập Nội dung Ghi chú trước khi Lưu"); // Thông báo lỗi
+      return; // Kết thúc hàm
     }
 
+    // Tạo đối tượng postRequest từ dữ liệu form
     const postRequest = {
       MaTicket: MaTicket,
       NoiDungXuLy: values.NoiDungXuLy,
@@ -53,19 +63,20 @@ const QuaTrinhXuLy = forwardRef(({}, ref) => {
 
     const resp = await api.createProcess({
       strJson: JSON.stringify(postRequest),
-    });
+    }); // Gọi API để thêm quá trình xử lý
 
     if (resp.Success) {
-      message.success("Thêm quá trình xử lý thành công");
+      message.success("Thêm quá trình xử lý thành công"); // Thông báo thành công
 
-      const data = resp.DataList;
+      const data = resp.DataList; // Lấy dữ liệu từ response
 
       if (data) {
-        setList(data);
-        form.resetFields();
+        setList(data); // Cập nhật danh sách quá trình xử lý
+        form.resetFields(); // Reset form
       }
     } else {
       if (resp.Error) {
+        // Kiểm tra nếu có lỗi
         message.error(resp.Error);
       } else {
         message.error("Có lỗi xảy ra");
@@ -74,20 +85,25 @@ const QuaTrinhXuLy = forwardRef(({}, ref) => {
   };
 
   const handleDelete = async (data) => {
+    // Hàm handleDelete sẽ được gọi khi click vào nút xóa
     await Modal.confirm({
-      title: "Xác nhận xóa",
-      content: "Bạn có chắc chắn muốn xóa quá trình xử lý này không?",
+      // Hiển thị modal xác nhận xóa
+      title: "Xác nhận xóa", // Tiêu đề modal
+      content: "Bạn có chắc chắn muốn xóa quá trình xử lý này không?", // Nội dung modal
       onOk: async () => {
         const postRequest = {
+          // Tạo đối tượng postRequest từ dữ liệu quá trình xử lý
           MaXuLy: data.MaXuLy,
           MaTicket: data.MaTicket,
         };
 
         const resp = await api.deleteProcess({
           strJson: JSON.stringify(postRequest),
-        });
+        }); // Gọi API để xóa quá trình xử lý
+
         if (resp.Success) {
-          message.success("Xóa quá trình xử lý thành công!");
+          // Kiểm tra nếu thành công
+          message.success("Xóa quá trình xử lý thành công!"); // Thông báo thành công
           setList(resp.DataList);
         } else {
           if (resp.Error) {
@@ -108,10 +124,10 @@ const QuaTrinhXuLy = forwardRef(({}, ref) => {
     });
   };
 
-  console.log(list);
-
   const render = useMemo(() => {
+    // Sử dụng hook useMemo để tối ưu hóa performance
     return list.map((item, index) => {
+      // Duyệt qua danh sách quá trình xử lý
       return (
         <Card key={index}>
           <Flex align="center" gap={10} justify="space-between">
@@ -181,8 +197,7 @@ const QuaTrinhXuLy = forwardRef(({}, ref) => {
           </Col>
         </Row>
       </Form>
-
-      {render}
+      {render} {/* Hiển thị danh sách quá trình xử lý */}
     </Flex>
   );
 });

@@ -28,26 +28,25 @@ import "./components/TaoMoiKhachHang.scss";
 import { useKhachHangDataSource } from "./components/dataSource/useKhachHangDataSource";
 
 const TaoMoiKhachHang = () => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm(); // Sử dụng hook Form.useForm để tạo form
 
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
-  const { currentUser } = useAuthInfo();
+  const { currentUser } = useAuthInfo(); // Sử dụng hook useAuthInfo để lấy thông tin user hiện tại
 
-  const { Type, MaKhachHang } = useParams();
+  const { Type, MaKhachHang } = useParams(); // Sử dụng hook useParams để lấy tham số trên url
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Sử dụng hook useNavigate để điều hướng trang
 
-  const { RangePicker } = DatePicker;
-
-  const listTinhTP = Form.useWatch("ListTinhTP", { form, preserve: true });
+  const listTinhTP = Form.useWatch("ListTinhTP", { form, preserve: true }); // Sử dụng hook Form.useWatch để theo dõi giá trị của ListTinhTP
   const listQuanHuyen = Form.useWatch("ListQuanHuyen", {
     form,
     preserve: true,
-  });
-  const listPhuongXa = Form.useWatch("ListPhuongXa", { form, preserve: true });
+  }); // Sử dụng hook Form.useWatch để theo dõi giá trị của ListQuanHuyen
+  const listPhuongXa = Form.useWatch("ListPhuongXa", { form, preserve: true }); // Sử dụng hook Form.useWatch để theo dõi giá trị của ListPhuongXa
 
   const onFinish = async (values) => {
+    // Hàm onFinish sẽ được gọi khi form được submit
     const postRequest = {
       MaKhachHang: values.MaKhachHang,
       TenKhachHang: values.TenKhachHang,
@@ -67,33 +66,39 @@ const TaoMoiKhachHang = () => {
       AnhDaiDien: values.AnhDaiDienPreview,
       NguoiTao: currentUser.Email,
       TrangThai: values.TrangThai == true ? "1" : "0",
-    };
+    }; // Tạo đối tượng postRequest từ dữ liệu form
 
     if (Type == "update") {
+      // Nếu Type là update
       const resp = await api.updateKhachHang({
         strJson: JSON.stringify(postRequest),
-      });
+      }); // Gọi API để cập nhật khách hàng
 
       if (resp.Success) {
         message.success("Cập nhật khách hàng thành công!", 1, () =>
           navigate("/dashboard/khachhang")
-        );
+        ); // Hiển thị thông báo cập nhật thành công
       } else {
-        message.error("Cập nhật khách hàng thất bại!");
+        message.error("Cập nhật khách hàng thất bại!"); // Hiển thị thông báo cập nhật thất bại
       }
     }
 
     if (Type == "add") {
+      // Nếu Type là add
       const resp = await api.createKhachHang({
-        strJson: JSON.stringify(postRequest),
+        // Gọi API để tạo mới khách hàng
+        strJson: JSON.stringify(postRequest), //  Truyền dữ liệu postRequest vào API
       });
 
       if (resp.Success) {
-        message.success("Tạo mới khách hàng thành công!", 1, () =>
-          navigate("/dashboard/khachhang")
+        // Nếu tạo mới thành công
+        message.success(
+          "Tạo mới khách hàng thành công!",
+          1,
+          () => navigate("/dashboard/khachhang") // Hiển thị thông báo tạo mới thành công
         );
       } else {
-        message.error("Tạo mới khách hàng thất bại!");
+        message.error("Tạo mới khách hàng thất bại!"); // Hiển thị thông báo tạo mới thất bại
       }
     }
   };
@@ -101,11 +106,13 @@ const TaoMoiKhachHang = () => {
   const getDetail = async () => {
     const resp = await api.getDetailKhachHang({
       MaKhachHang: MaKhachHang,
-    });
+    }); // Gọi API để lấy thông tin chi tiết khách hàng
 
     if (resp && resp.Success) {
-      const data = resp.Data;
+      // Nếu API trả về thành công
+      const data = resp.Data; // Lấy dữ liệu từ API
       form.setFieldsValue({
+        // Set giá trị cho form
         MaKhachHang: data.MaKhachHang,
         TenKhachHang: data.TenKhachHang,
         NgaySinh: data.NgaySinh ? dayjs(data.NgaySinh, "YYYY-MM-DD") : null,
@@ -129,49 +136,62 @@ const TaoMoiKhachHang = () => {
       });
 
       if (data.MaQuocGia) {
+        // Nếu có mã quốc gia
         await api.getTinhTPByMaQuocGia(data.MaQuocGia).then((res) => {
+          // Gọi API lấy danh sách tỉnh/TP
           if (res && res.DataList) {
+            // Nếu có dữ liệu trả về
             const result = res.DataList.map((item) => {
+              // Lấy danh sách tỉnh/TP từ response
               return {
                 label: item.TenTinhTp,
                 value: item.MaTinhTp,
               };
             });
-            form.setFieldValue("ListTinhTP", result);
+            form.setFieldValue("ListTinhTP", result); // Set giá trị cho ListTinhTP
           }
         });
       }
 
       if (data.MaTinhTP) {
+        // Nếu có mã tỉnh/TP
         await api.getQuanHuyenByMaTinhTP(data.MaTinhTP).then((res) => {
+          // Gọi API lấy danh sách quận/huyện
           if (res && res.DataList) {
+            // Nếu có dữ liệu trả về
             const result = res.DataList.map((item) => {
+              // Lấy danh sách quận/huyện từ response
               return {
                 label: item.TenQuanHuyen,
                 value: item.MaQuanHuyen,
               };
             });
-            form.setFieldValue("ListQuanHuyen", result);
+            form.setFieldValue("ListQuanHuyen", result); // Set giá trị cho ListQuanHuyen
           }
         });
       }
 
       if (data.MaQuanHuyen) {
+        // Nếu có mã quận/huyện
         await api.getPhuongXaByMaQuanHuyen(data.MaQuanHuyen).then((res) => {
+          // Gọi API lấy danh sách xã/phường
           if (res && res.DataList) {
+            // Nếu có dữ liệu trả về
             const result = res.DataList.map((item) => {
+              // Lấy danh sách xã/phường từ response
               return {
                 label: item.TenPhuongXa,
                 value: item.MaPhuongXa,
               };
             });
-            form.setFieldValue("ListPhuongXa", result);
+            form.setFieldValue("ListPhuongXa", result); // Set giá trị cho ListPhuongXa
           }
         });
       }
 
       if (data.MaPhuongXa) {
         await api.getPhuongXaByMaQuanHuyen(data.MaQuanHuyen).then((res) => {
+          // Gọi API lấy danh sách xã/phường
           if (res && res.DataList) {
             const result = res.DataList.map((item) => {
               return {
@@ -179,16 +199,16 @@ const TaoMoiKhachHang = () => {
                 value: item.MaPhuongXa,
               };
             });
-            form.setFieldValue("ListPhuongXa", result);
+            form.setFieldValue("ListPhuongXa", result); // Set giá trị cho ListPhuongXa
           }
         });
       }
     }
-  };
+  }; // Hàm getDetail sẽ được gọi khi Type và MaKhachHang thay đổi
 
   useEffect(() => {
     if (MaKhachHang) {
-      getDetail();
+      getDetail(); // Gọi hàm getDetail
     }
   }, [Type, MaKhachHang]);
 
@@ -244,7 +264,9 @@ const TaoMoiKhachHang = () => {
   };
 
   const handleClearQuocGia = () => {
+    // Hàm xóa quốc gia
     form.setFieldsValue({
+      // Set giá trị cho form
       MaQuocGia: null,
       MaTinhTp: null,
       MaQuanHuyen: null,
@@ -256,6 +278,7 @@ const TaoMoiKhachHang = () => {
   };
 
   const handleClearTinhTP = () => {
+    // Hàm xóa tỉnh/TP
     form.setFieldsValue({
       MaTinhTp: null,
       MaQuanHuyen: null,
@@ -266,6 +289,7 @@ const TaoMoiKhachHang = () => {
   };
 
   const handleClearQuanHuyen = () => {
+    // Hàm xóa quận/huyện
     form.setFieldsValue({
       MaQuanHuyen: null,
       MaPhuongXa: null,
@@ -274,21 +298,25 @@ const TaoMoiKhachHang = () => {
   };
 
   const handleClearPhuongXa = () => {
+    // Hàm xóa xã/phường
     form.setFieldsValue({
       MaPhuongXa: null,
     });
   };
 
   const handleBack = () => {
-    navigate("/dashboard/khachhang");
+    // Hàm quay lại
+    navigate("/dashboard/khachhang"); // Điều hướng đến trang quản lý khách hàng
   };
 
-  const previewImage = useWatch("AnhDaiDienPreview", { form, preserve: true });
+  const previewImage = useWatch("AnhDaiDienPreview", { form, preserve: true }); // Sử dụng hook useWatch để theo dõi giá trị của AnhDaiDienPreview
 
   const handlePreview = (info) => {
+    // Hàm xem trước ảnh
     if (info.file.response?.Data?.FilePath) {
+      // Nếu có đường dẫn ảnh
       form.setFieldsValue({
-        AnhDaiDienPreview: info.file.response?.Data?.FilePath,
+        AnhDaiDienPreview: info.file.response?.Data?.FilePath, // Set giá trị cho AnhDaiDienPreview
       });
     }
   };

@@ -12,9 +12,8 @@ import {
   Tabs,
   Typography,
 } from "antd";
-import React, { useRef } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ConfirmPopup from "../../../../components/popup/ConfirmPopup";
 import { useApiService } from "../../../../components/service/useApiService";
 import "./components/ChiTietKhachHang.scss";
 import ChiTietTab from "./components/Tabs/ChiTietTab";
@@ -23,31 +22,36 @@ import EticketTab from "./components/Tabs/EticketTab";
 const ChiTietKhachHang = () => {
   const navigate = useNavigate();
 
-  const popupRef = useRef();
+  const { MaKhachHang } = useParams(); // lấy mã khách hàng từ url
 
-  const { MaKhachHang } = useParams();
-
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
   const handleBack = () => {
-    navigate("/dashboard/khachhang");
+    // Hàm quay lại trang quản lý khách hàng
+    navigate("/dashboard/khachhang"); // Chuyển hướng đến trang quản lý khách hàng
   };
 
   const handleUpdate = () => {
-    navigate(`/dashboard/khachhang/update/${MaKhachHang}`);
+    // Hàm chuyển hướng đến trang chỉnh sửa thông tin khách hàng
+    navigate(`/dashboard/khachhang/update/${MaKhachHang}`); // Chuyển hướng đến trang chỉnh sửa thông tin khách hàng
   };
 
   const handleDelete = async () => {
+    // Hàm xóa khách hàng
     await Modal.confirm({
-      title: "Xác nhận xóa",
-      content: "Bạn có chắc chắn muốn xóa khách hàng này không?",
+      // Hiển thị modal xác nhận xóa
+      title: "Xác nhận xóa", // Tiêu đề modal
+      content: "Bạn có chắc chắn muốn xóa khách hàng này không?", // Nội dung modal
       onOk: async () => {
+        // Hàm xác nhận xóa
         const resp = await api.deleteKhachHang({
-          MaKhachHang: MaKhachHang,
+          // Gọi api xóa khách hàng
+          MaKhachHang: MaKhachHang, // Truyền mã khách hàng cần xóa
         });
         if (resp.Success) {
-          message.success("Xóa khách hàng thành công!");
-          handleBack();
+          // Nếu xóa thành công
+          message.success("Xóa khách hàng thành công!"); // Hiển thị thông báo xóa thành công
+          handleBack(); // Quay lại trang quản lý khách hàng
         } else {
           if (resp.Error) {
             message.error(resp.Error);
@@ -68,13 +72,17 @@ const ChiTietKhachHang = () => {
   };
 
   const { data } = useQuery({
-    queryKey: ["getAllThongTinKhachHang", MaKhachHang],
+    // Sử dụng hook useQuery để lấy dữ liệu thông tin khách hàng
+    queryKey: ["getAllThongTinKhachHang", MaKhachHang], // Truyền key và mã khách hàng
     queryFn: async () => {
+      // Hàm gọi api lấy thông tin khách hàng
       const resp = await api.getAllInfoKhachHang({
-        MaKhachHang: MaKhachHang,
+        // Gọi api lấy thông tin khách hàng
+        MaKhachHang: MaKhachHang, // Truyền mã khách hàng
       });
 
       if (resp.Success) {
+        // Nếu lấy dữ liệu thành công
         return {
           Info: resp.Data.KhachHang,
           Ticket: resp.Data.Ticket,
@@ -212,8 +220,6 @@ const ChiTietKhachHang = () => {
           },
         ]}
       />
-
-      <ConfirmPopup ref={popupRef} />
     </div>
   );
 };

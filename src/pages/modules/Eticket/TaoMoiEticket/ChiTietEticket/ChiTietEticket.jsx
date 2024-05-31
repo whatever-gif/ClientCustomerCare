@@ -26,6 +26,7 @@ import QuaTrinhXuLy from "./components/Tabs/QuaTrinhXuLy";
 
 const ChiTietEticket = () => {
   const listDropdown = [
+    // Khai báo mảng listDropdown cho button more
     {
       label: "Xóa",
       key: "0",
@@ -44,29 +45,41 @@ const ChiTietEticket = () => {
     },
   ];
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Sử dụng hook useNavigate để điều hướng trang
 
-  const quaTrinhXuLyRef = useRef();
+  const quaTrinhXuLyRef = useRef(); // Sử dụng hook useRef để lưu trữ danh sách quá trình xử lý
 
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
-  const { currentUser } = useAuthInfo();
+  const { currentUser } = useAuthInfo(); // Sử dụng hook useAuthInfo để lấy thông tin người dùng hiện tại
 
-  const { MaTicket } = useParams();
+  const { MaTicket } = useParams(); // Lấy MaTicket từ url
 
   const { data, refetch } = useQuery({
-    queryKey: ["getAllThongTinKhachHang", MaTicket],
+    // Sử dụng hook useQuery để lấy dữ liệu từ server
+    queryKey: ["getAllThongTinKhachHang", MaTicket], // Khóa duy nhất để xác định truy vấn này
     queryFn: async () => {
+      // Hàm thực hiện truy vấn
       const resp = await api.getByMaTicket({
+        // Gọi API để lấy dữ liệu thông tin khách hàng
         MaTicket: MaTicket,
       });
 
-      if (resp.Success) {
-        quaTrinhXuLyRef.current.setList(resp.Data.ListQuaTrinhXuLy);
+      if (
+        resp.Success &&
+        resp.Data &&
+        resp.Data.Eticket &&
+        resp.Data.KhachHang
+      ) {
+        // Kiểm tra nếu có dữ liệu trả về
+        if (quaTrinhXuLyRef.current) {
+          // Kiểm tra nếu có danh sách quá trình xử lý
+          quaTrinhXuLyRef.current.setList(resp.Data.ListQuaTrinhXuLy); // Gọi hàm setList để cập nhật danh sách quá trình xử lý
+        }
 
         return {
-          Info: { ...resp.Data.Eticket, ...resp.Data.KhachHang },
-          ListQTXL: resp.Data.ListQuaTrinhXuLy,
+          Info: { ...resp.Data.Eticket, ...resp.Data.KhachHang }, // Trả về dữ liệu thông tin khách hàng
+          ListQTXL: resp.Data.ListQuaTrinhXuLy, // Trả về danh sách quá trình xử lý
         };
       } else {
         if (resp.Error) {
@@ -75,9 +88,10 @@ const ChiTietEticket = () => {
           message.error("Có lỗi xảy ra");
         }
 
+        // Nếu không có dữ liệu hợp lệ
         return {
-          Info: {},
-          ListQTXL: [],
+          Info: {}, // Trả về dữ liệu rỗng
+          ListQTXL: [], // Trả về danh sách rỗng
         };
       }
     },
@@ -85,20 +99,24 @@ const ChiTietEticket = () => {
   });
 
   const filteredListDropdown = (status) => {
+    // Hàm filteredListDropdown sẽ lọc danh sách dropdown theo trạng thái
     return listDropdown.filter((item) => {
       // if (status === "Open") {
       //   return item.key !== "0";
       // }
 
       if (status === "Processing") {
+        // Kiểm tra nếu trạng thái là Processing
         return item.key !== "1";
       }
 
       if (status === "Closed") {
+        // Kiểm tra nếu trạng thái là Closed
         return item.key === "0";
       }
 
       if (status === "Solved") {
+        // Kiểm tra nếu trạng thái là Solved
         return item.key === "0";
       }
 
@@ -107,18 +125,21 @@ const ChiTietEticket = () => {
   };
 
   const status = renderTagColor({
-    renderedCellValue: data?.Info.MaTrangThaiTicket,
-  });
+    renderedCellValue: data?.Info?.MaTrangThaiTicket,
+  }); // Gọi hàm renderTagColor để hiển thị trạng thái
 
   const handleBack = () => {
-    navigate("/dashboard/eticket");
+    // Hàm handleBack sẽ được gọi khi click vào nút hủy bỏ
+    navigate("/dashboard/eticket"); // Điều hướng trang về trang eticket
   };
 
   const handleEdit = () => {
-    navigate(`/dashboard/eticket/update/${MaTicket}`);
+    // Hàm handleEdit sẽ được gọi khi click vào nút chỉnh sửa
+    navigate(`/dashboard/eticket/update/${MaTicket}`); // Điều hướng trang đến trang chỉnh sửa eticket
   };
 
   const content = ({ currentStatus, newStatus }) => {
+    // Hàm content sẽ trả về nội dung modal xác nhận chuyển trạng thái
     return (
       <div>
         Bạn có muốn chuyển từ trạng thái của ticket từ{" "}
@@ -134,21 +155,29 @@ const ChiTietEticket = () => {
   };
 
   const handleDelete = async () => {
+    // Hàm handleDelete sẽ được gọi khi click vào nút xóa
     await Modal.confirm({
-      title: "Xác nhận xóa",
-      content: "Bạn có chắc chắn muốn xóa ticket này không?",
+      // Hiển thị modal xác nhận xóa
+      title: "Xác nhận xóa", // Tiêu đề modal
+      content: "Bạn có chắc chắn muốn xóa ticket này không?", // Nội dung modal
       onOk: async () => {
+        // Hàm onOk sẽ được gọi khi click vào nút đồng ý
         const postRequest = {
+          // Tạo đối tượng postRequest từ dữ liệu ticket
           MaTicket: MaTicket,
           NguoiCapNhat: currentUser.Email,
         };
 
         const resp = await api.deleteTicket({
-          strJson: JSON.stringify(postRequest),
+          // Gọi API để xóa ticket
+          strJson: JSON.stringify(postRequest), // Chuyển đổi dữ liệu thành chuỗi JSON
         });
         if (resp.Success) {
-          message.success("Xóa ticket thành công!", 2, () =>
-            navigate("/dashboard/khachhang")
+          // Kiểm tra nếu thành công
+          message.success(
+            "Xóa ticket thành công!",
+            2,
+            () => navigate("/dashboard/khachhang") // Thông báo thành công và điều hướng trang về trang khách hàng
           );
         } else {
           if (resp.Error) {
@@ -171,23 +200,28 @@ const ChiTietEticket = () => {
 
   const handleProcess = async () => {
     await Modal.confirm({
-      title: "Chuyển trạng thái",
+      // Hiển thị modal xác nhận chuyển trạng thái
+      title: "Chuyển trạng thái", // Tiêu đề modal
       content: content({
-        currentStatus: data?.Info.MaTrangThaiTicket,
-        newStatus: "Processing",
+        // Nội dung modal
+        currentStatus: data?.Info?.MaTrangThaiTicket, // Trạng thái hiện tại
+        newStatus: "Processing", // Trạng thái mới
       }),
       onOk: async () => {
+        // Hàm onOk sẽ được gọi khi click vào nút đồng ý
         const postRequest = {
+          // Tạo đối tượng postRequest từ dữ liệu ticket
           MaTicket: MaTicket,
           MaTrangThaiTicket: "Processing",
           NguoiCapNhat: currentUser.Email,
         };
 
         const resp = await api.updateTrangThaiTicket({
-          strJson: JSON.stringify(postRequest),
+          // Gọi API để cập nhật trạng thái ticket
+          strJson: JSON.stringify(postRequest), // Chuyển đổi dữ liệu thành chuỗi JSON
         });
         if (resp.Success) {
-          message.success("Cập nhật trạng thái thành công!");
+          message.success("Cập nhật trạng thái thành công!"); // Thông báo thành công
           refetch();
           // navigate("/dashboard/khachhang");
         } else {
@@ -210,23 +244,31 @@ const ChiTietEticket = () => {
   };
 
   const handleClose = async () => {
+    // Hàm handleClose sẽ được gọi khi click vào nút đóng
     await Modal.confirm({
-      title: "Chuyển trạng thái",
+      // Hiển thị modal xác nhận chuyển trạng thái
+      title: "Chuyển trạng thái", // Tiêu đề modal
       content: content({
-        currentStatus: data?.Info.MaTrangThaiTicket,
-        newStatus: "Closed",
+        // Nội dung modal
+        currentStatus: data?.Info?.MaTrangThaiTicket, // Trạng thái hiện tại
+        newStatus: "Closed", // Trạng thái mới
       }),
       onOk: async () => {
+        // Hàm onOk sẽ được gọi khi click vào nút đồng ý
         const postRequest = {
+          // Tạo đối tượng postRequest từ dữ liệu ticket
           MaTicket: MaTicket,
           MaTrangThaiTicket: "Closed",
           NguoiCapNhat: currentUser.Email,
         };
 
+        // Gọi API để cập nhật trạng thái ticket
         const resp = await api.updateTrangThaiTicket({
           strJson: JSON.stringify(postRequest),
         });
+
         if (resp.Success) {
+          // Kiểm tra nếu thành công
           message.success("Cập nhật trạng thái thành công!");
           refetch();
           // navigate("/dashboard/khachhang");
@@ -250,25 +292,31 @@ const ChiTietEticket = () => {
   };
 
   const handleSolved = async () => {
+    // Hàm handleSolved sẽ được gọi khi click vào nút hoàn thành
     await Modal.confirm({
-      title: "Chuyển trạng thái",
+      // Hiển thị modal xác nhận chuyển trạng thái
+      title: "Chuyển trạng thái", // Tiêu đề modal
       content: content({
-        currentStatus: data?.Info.MaTrangThaiTicket,
-        newStatus: "Solved",
+        // Nội dung modal
+        currentStatus: data?.Info?.MaTrangThaiTicket, // Trạng thái hiện tại
+        newStatus: "Solved", // Trạng thái mới
       }),
       onOk: async () => {
+        // Hàm onOk sẽ được gọi khi click vào nút đồng ý
         const postRequest = {
-          MaTicket: MaTicket,
-          MaTrangThaiTicket: "Solved",
-          NguoiCapNhat: currentUser.Email,
+          // Tạo đối tượng postRequest từ dữ liệu ticket
+          MaTicket: MaTicket, // Mã ticket
+          MaTrangThaiTicket: "Solved", // Trạng thái mới
+          NguoiCapNhat: currentUser.Email, // Người cập nhật
         };
 
         const resp = await api.updateTrangThaiTicket({
-          strJson: JSON.stringify(postRequest),
+          strJson: JSON.stringify(postRequest), // Gọi API để cập nhật trạng thái ticket
         });
         if (resp.Success) {
-          message.success("Cập nhật trạng thái thành công!");
-          refetch();
+          // Kiểm tra nếu thành công
+          message.success("Cập nhật trạng thái thành công!"); // Thông báo thành công
+          refetch(); // Làm mới dữ liệu
           // navigate("/dashboard/khachhang");
         } else {
           if (resp.Error) {
@@ -305,31 +353,31 @@ const ChiTietEticket = () => {
     if (e.key == "3") {
       await handleSolved();
     }
-  };
+  }; // Hàm handleClickDropdown sẽ được gọi khi click vào dropdown
 
   const renderTime = () => {
-    if (data?.Info.FlagQuaHanXuLy == 1) {
+    // Hàm renderTime sẽ hiển thị thời gian xử lý
+    if (data?.Info?.FlagQuaHanXuLy == 1) {
+      // Kiểm tra nếu quá hạn xử lý
       if (
-        data?.Info.MaTrangThaiTicket == "Closed" ||
-        data?.Info.MaTrangThaiTicket == "Solved"
+        data?.Info?.MaTrangThaiTicket == "Closed" || // Kiểm tra nếu trạng thái là Closed
+        data?.Info?.MaTrangThaiTicket == "Solved" // Kiểm tra nếu trạng thái là Solved
       ) {
-        return data?.Info.ThoiGianXuLy;
+        return data?.Info?.ThoiGianXuLy; // Trả về thời gian xử lý
       } else {
-        return <CountTime baseTime={data?.Info.ThoiGianXuLy} />;
+        return <CountTime baseTime={data?.Info?.ThoiGianXuLy} />; // Trả về bộ đếm thời gian xử lý
       }
     } else {
       if (
-        data?.Info.MaTrangThaiTicket == "Closed" ||
-        data?.Info.MaTrangThaiTicket == "Solved"
+        data?.Info?.MaTrangThaiTicket == "Closed" || // Kiểm tra nếu trạng thái là Closed
+        data?.Info?.MaTrangThaiTicket == "Solved" // Kiểm tra nếu trạng thái là Solved
       ) {
-        return data?.Info.ThoiGianXuLy;
+        return data?.Info?.ThoiGianXuLy; // Trả về thời gian xử lý
       } else {
-        return <CountTime baseTime={data?.Info.ThoiGianXuLy} />;
+        return <CountTime baseTime={data?.Info?.ThoiGianXuLy} />; // Trả về bộ đếm thời gian xử lý
       }
     }
   };
-
-  console.log(data?.Info);
 
   return (
     <div>
@@ -372,7 +420,7 @@ const ChiTietEticket = () => {
             <Button onClick={handleBack}>Hủy bỏ</Button>
             <Dropdown
               menu={{
-                items: filteredListDropdown(data?.Info.MaTrangThaiTicket),
+                items: filteredListDropdown(data?.Info?.MaTrangThaiTicket),
                 onClick: handleClickDropdown,
               }}
               trigger={["click"]}
@@ -388,13 +436,13 @@ const ChiTietEticket = () => {
           <Col span={12}>
             <Flex gap={5}>
               <Typography.Text strong>
-                {data?.Info.TenTicket} - {data?.Info.MaTicket}
+                {data?.Info?.TenTicket} - {data?.Info?.MaTicket}
               </Typography.Text>
             </Flex>
           </Col>
           <Col span={12}>
             <Flex justify="end">
-              {data?.Info.FlagQuaHanXuLy == 1 && (
+              {data?.Info?.FlagQuaHanXuLy == 1 && (
                 <Tag color="red">Quá hạn xử lý</Tag>
               )}
             </Flex>
@@ -404,10 +452,10 @@ const ChiTietEticket = () => {
           <Col span={1}></Col>
 
           <Col span={3}>
-            {data?.Info.AnhDaiDien ? (
-              <Avatar size={100} src={data?.Info.AnhDaiDien}></Avatar>
+            {data?.Info?.AnhDaiDien ? (
+              <Avatar size={100} src={data?.Info?.AnhDaiDien}></Avatar>
             ) : (
-              <Avatar size={100}>{data?.Info.TenKhachHang[0]}</Avatar>
+              <Avatar size={100}>{data?.Info?.TenKhachHang?.[0]}</Avatar>
             )}
           </Col>
           <Col span={6}>
@@ -422,13 +470,13 @@ const ChiTietEticket = () => {
               <Flex gap={10}>
                 <Typography>Tên khách hàng:</Typography>
                 <Typography.Text strong>
-                  {data?.Info.TenKhachHang}
+                  {data?.Info?.TenKhachHang}
                 </Typography.Text>
               </Flex>
               <Flex gap={10}>
                 <Typography>SĐT Khách hàng:</Typography>
                 <Typography.Text strong>
-                  {data?.Info.SoDienThoai}
+                  {data?.Info?.SoDienThoai}
                 </Typography.Text>
               </Flex>
             </Flex>
@@ -449,7 +497,7 @@ const ChiTietEticket = () => {
               <Flex gap={10}>
                 <Typography>Phân loại:</Typography>
                 <Typography.Text strong>
-                  {data?.Info.TenPhanLoaiTicket}
+                  {data?.Info?.TenPhanLoaiTicket}
                 </Typography.Text>
               </Flex>
             </Flex>
@@ -470,7 +518,7 @@ const ChiTietEticket = () => {
               <Flex gap={10}>
                 <Typography>Deadline:</Typography>
                 <Typography.Text strong>
-                  {data?.Info.TicketDeadline}
+                  {data?.Info?.TicketDeadline}
                 </Typography.Text>
               </Flex>
             </Flex>

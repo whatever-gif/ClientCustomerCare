@@ -7,6 +7,10 @@ export const useKhachHangService = () => {
     return await get("khachhang/search", data);
   };
 
+  const getKhachHangActive = async () => {
+    return await get("khachhang/getActive");
+  };
+
   const createKhachHang = async (data) => {
     return await get("khachhang/create", data);
   };
@@ -34,5 +38,6 @@ export const useKhachHangService = () => {
     updateKhachHang,
     getAllInfoKhachHang,
     deleteKhachHang,
+    getKhachHangActive,
   };
 };

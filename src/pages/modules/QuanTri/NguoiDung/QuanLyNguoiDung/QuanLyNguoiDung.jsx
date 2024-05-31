@@ -9,24 +9,27 @@ const QuanLyNguoiDung = () => {
   const [formValue, setFormValue] = useState({
     Keyword: "",
     id: "",
-  });
+  }); // Sử dụng hook useState để lưu trữ giá trị của form
 
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
   const { data, refetch } = useQuery({
-    queryKey: ["nguoidung", formValue],
+    // Sử dụng hook useQuery để lấy dữ liệu từ server
+    queryKey: ["nguoidung", formValue], // Khóa duy nhất để xác định truy vấn này
     queryFn: async () => {
       const resp = api.getNguoiDung({
+        // Gọi API để lấy dữ liệu người dùng
         Keyword: formValue.Keyword,
       });
 
       return resp;
     },
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false, // Không làm mới dữ liệu khi cửa sổ được focus
   });
 
   const onFormSubmit = (values) => {
-    setFormValue(values);
+    // Hàm onFormSubmit sẽ được gọi khi form được submit
+    setFormValue(values); // Lưu giá trị form vào state formValue
   };
 
   return (

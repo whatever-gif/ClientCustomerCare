@@ -1,26 +1,40 @@
+// Import các component từ thư viện antd
 import { Form, Input, message, Modal } from "antd";
+// Import các hook từ thư viện react
 import React, { forwardRef, useImperativeHandle, useState } from "react";
+// Import hook useAuthInfo từ thư mục auth
 import { useAuthInfo } from "../auth/useAuthInfo";
+// Import hàm customizeRequiredMark từ thư mục reuse
 import { customizeRequiredMark } from "../reuse/CustomRequire";
+// Import hook useApiService từ thư mục service
 import { useApiService } from "../service/useApiService";
 
+// Component PopupDoiMatKhau sử dụng forwardRef để có thể sử dụng ref từ component cha
 const PopupDoiMatKhau = forwardRef((props, ref) => {
+  // Sử dụng useState để quản lý trạng thái hiển thị của Modal
   const [visible, setVisible] = useState(false);
+  // Sử dụng Form.useForm để tạo ra instance của form
   const [form] = Form.useForm();
 
+  // Sử dụng hook useApiService để gọi API
   const api = useApiService();
 
+  // Lấy thông tin người dùng hiện tại từ hook useAuthInfo
   const { currentUser } = useAuthInfo();
 
+  // Sử dụng useImperativeHandle để tạo ra các hàm show và hide có thể gọi từ component cha thông qua ref
   useImperativeHandle(ref, () => ({
     show: () => setVisible(true),
     hide: () => setVisible(false),
   }));
 
+  // Hàm xử lý khi nhấn OK trên Modal
   const handleOk = async () => {
+    // Validate form
     form
       .validateFields()
       .then(async (values) => {
+        // Gọi API để cập nhật mật khẩu
         const resp = await api.updateNguoiDungMatKhau({
           strJson: JSON.stringify({
             Email: currentUser.Email,
@@ -29,23 +43,29 @@ const PopupDoiMatKhau = forwardRef((props, ref) => {
           }),
         });
 
+        // Kiểm tra nếu cập nhật thành công thì hiển thị thông báo và đóng Modal
         if (resp.Success) {
           message.success("Cập nhật mật khẩu thành công!");
           handleCancel();
         } else {
+          // Nếu cập nhật thất bại thì hiển thị thông báo lỗi
           message.error(resp.Error);
         }
       })
       .catch((info) => {
+        // Nếu validate form thất bại thì hiển thị thông báo lỗi
         message.error("Vui lòng kiểm tra lại thông tin đã nhập!");
       });
   };
 
+  // Hàm xử lý khi nhấn Cancel trên Modal
   const handleCancel = () => {
+    // Đóng Modal và reset form
     setVisible(false);
     form.resetFields();
   };
 
+  // Trả về JSX
   return (
     <Modal
       title="Cập nhật mật khẩu"
@@ -127,4 +147,5 @@ const PopupDoiMatKhau = forwardRef((props, ref) => {
   );
 });
 
+// Xuất component PopupDoiMatKhau
 export default PopupDoiMatKhau;

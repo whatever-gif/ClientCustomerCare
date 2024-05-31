@@ -15,12 +15,13 @@ import { useApiService } from "../../../../../../components/service/useApiServic
 import CustomTable from "../../../../../../components/table/CustomTable";
 
 const TableEticket = ({ data, refetch }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Sử dụng hook useNavigate để điều hướng trang
 
-  const { currentUser } = useAuthInfo();
+  const { currentUser } = useAuthInfo(); // Sử dụng hook useAuthInfo để lấy thông tin người dùng hiện tại
 
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
+  // Định nghĩa các cột của bảng
   const columns = useMemo(
     () => [
       {
@@ -73,12 +74,14 @@ const TableEticket = ({ data, refetch }) => {
     []
   );
 
+  // Cấu hình cho việc xuất dữ liệu ra file CSV
   const csvConfig = mkConfig({
     fieldSeparator: ",",
     decimalSeparator: ".",
     useKeysAsHeaders: true,
   });
 
+  // Hàm xử lý khi người dùng muốn xuất dữ liệu ra file CSV
   const handleExportData = () => {
     const csv = generateCsv(csvConfig)(data?.DataList ?? []);
     if (csv) {
@@ -89,52 +92,65 @@ const TableEticket = ({ data, refetch }) => {
     }
   };
 
+  // Hàm xử lý khi người dùng muốn tạo mới ticket
   const handleAdd = () => {
-    navigate("/dashboard/eticket/add");
+    navigate("/dashboard/eticket/add"); // Điều hướng đến trang tạo mới ticket
   };
 
+  // Hàm xử lý khi người dùng muốn cập nhật ticket
   const handleUpdate = (row) => {
-    const data = row.original.MaTicket;
-    navigate(`/dashboard/eticket/update/${data}`);
+    const data = row.original.MaTicket; // Lấy mã ticket
+    navigate(`/dashboard/eticket/update/${data}`); // Điều hướng đến trang cập nhật ticket
   };
 
+  // Hàm xử lý khi người dùng muốn xóa ticket
   const handleDelete = async (row) => {
-    const data = row.original.MaTicket;
+    const data = row.original.MaTicket; // Lấy mã ticket
 
     await Modal.confirm({
-      title: "Xác nhận xóa",
-      content: "Bạn có chắc chắn muốn xóa ticket này không?",
+      title: "Xác nhận xóa", // Tiêu đề của modal
+      content: "Bạn có chắc chắn muốn xóa ticket này không?", // Nội dung của modal
       onOk: async () => {
+        // Hàm xử lý khi người dùng ấn nút Đồng ý
+
+        // Tạo request gửi lên server
         const postRequest = {
           MaTicket: data,
           NguoiCapNhat: currentUser.Email,
         };
 
+        // Gọi API để xóa ticket
         const resp = await api.deleteTicket({
           strJson: JSON.stringify(postRequest),
         });
+
+        // Kiểm tra kết quả trả về
         if (resp.Success) {
-          message.success("Xóa ticket thành công!");
-          await refetch();
+          message.success("Xóa ticket thành công!"); // Hiển thị thông báo thành công
+          await refetch(); // Gọi hàm refetch để load lại dữ liệu
         } else {
           if (resp.Error) {
-            message.error(resp.Error);
+            message.error(resp.Error); // Hiển thị thông báo lỗi
           } else {
-            message.error("Có lỗi xảy ra");
+            message.error("Có lỗi xảy ra"); // Hiển thị thông báo lỗi
           }
         }
       },
+      // Cấu hình cho modal
       okButtonProps: {
         style: {
           backgroundColor: "#03884A",
         },
         type: "primary",
       },
+      // Cấu hình cho nút Đồng ý
       okText: "Đồng ý",
+      // Cấu hình cho nút Hủy
       cancelText: "Hủy",
     });
   };
 
+  // Custom row actions cho bảng
   const customRowActions = ({ row, table }) => (
     <Flex
       justify="space-around"
@@ -153,6 +169,7 @@ const TableEticket = ({ data, refetch }) => {
     </Flex>
   );
 
+  // Custom toolbar cho bảng
   const customToolbar = () => {
     return (
       <Flex gap={10}>

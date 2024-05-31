@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { useConfigApi } from "../../../../../../components/api/useConfigApi";
+import { useApiService } from "../../../../../../components/service/useApiService";
 
 export const useKhachHangDataSource = () => {
-  const { get } = useConfigApi();
+  const api = useApiService();
 
   const { data: listQuocGia } = useQuery({
+    // Sử dụng hook useQuery để lấy dữ liệu từ server
     queryKey: ["listQuocGia"],
     queryFn: async () => {
-      const result = await get("quocgia/search");
+      const result = await api.getQuocGia(); // Gọi API để lấy danh sách quốc gia
 
       const dataList =
         result.DataList && result.DataList.length > 0 ? result.DataList : [];
@@ -25,7 +26,7 @@ export const useKhachHangDataSource = () => {
   const { data: listGTTT } = useQuery({
     queryKey: ["listGTTT"],
     queryFn: async () => {
-      const result = await get("gttt/search");
+      const result = await api.getGTTT();
 
       const dataList =
         result.DataList && result.DataList.length > 0 ? result.DataList : [];
@@ -43,7 +44,7 @@ export const useKhachHangDataSource = () => {
   const { data: listNguonKhach } = useQuery({
     queryKey: ["listNguonKhach"],
     queryFn: async () => {
-      const result = await get("nguonkhach/search");
+      const result = await api.getNguonKhach();
 
       const dataList =
         result.DataList && result.DataList.length > 0 ? result.DataList : [];

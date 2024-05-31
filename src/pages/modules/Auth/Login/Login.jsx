@@ -1,15 +1,21 @@
+// Import các component cần thiết từ thư viện antd, react và react-router-dom
 import { Button, Card, Col, Flex, Form, Input, Row, Typography } from "antd";
 import React from "react";
 import { useSubmit } from "react-router-dom";
 import { customizeRequiredMark } from "../../../../components/reuse/CustomRequire";
+import "./login.scss" // Import file CSS cho trang login
 
+// Khai báo component LoginPage
 function LoginPage() {
+  // Sử dụng hook useSubmit từ react-router-dom
   const submit = useSubmit();
 
+  // Khai báo hàm onFinish, sẽ được gọi khi form được submit
   const onFinish = async (data) => {
+    // Gửi dữ liệu form đến server bằng phương thức POST tại đường dẫn /login
     submit(data, { method: "POST", action: "/login" });
   };
-
+  
   return (
     <div className="welcome-page">
       <Card
@@ -108,23 +114,10 @@ function LoginPage() {
                   Đăng nhập
                 </Button>
               </Form.Item>
-
-              {/* <Form.Item>
-                <Button
-                  type="primary"
-                  style={{
-                    fontWeight: 600,
-                    backgroundColor: "#2B86C5",
-                  }}
-                >
-                  <Link to="/signin">Đăng ký</Link>
-                </Button>
-              </Form.Item> */}
             </Flex>
           </Form>
         </Flex>
       </Card>
-      {/* <Outlet /> */}
     </div>
   );
 }

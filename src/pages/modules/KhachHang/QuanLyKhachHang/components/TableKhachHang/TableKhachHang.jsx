@@ -4,7 +4,7 @@ import {
   EditOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Flex, message, Modal } from "antd";
+import { Avatar, Button, Flex, message, Modal } from "antd";
 import { download, generateCsv, mkConfig } from "export-to-csv";
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,17 +14,26 @@ import { useApiService } from "../../../../../../components/service/useApiServic
 import CustomTable from "../../../../../../components/table/CustomTable";
 
 const TableKhachHang = ({ data, refetch }) => {
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
+  // Khai báo các cột của bảng
   const columns = useMemo(
     () => [
       {
         accessorKey: "idx", //access nested data with dot notation
-        header: "Số thứ tự",
-        size: 120,
+        header: "STT",
+        size: 50,
         Cell: ({ row }) => {
           return row.index + 1;
         },
+      },
+      {
+        accessorKey: "AnhDaiDien",
+        header: "Ảnh đại diện",
+        size: 50,
+        Cell: ({ renderedCellValue }) => (
+          <Avatar src={renderedCellValue} size="small" />
+        ),
       },
       {
         accessorKey: "MaKhachHang", //access nested data with dot notation
@@ -48,13 +57,69 @@ const TableKhachHang = ({ data, refetch }) => {
         size: 150,
       },
       {
+        accessorKey: "NgaySinh",
+        header: "Ngày sinh",
+        size: 150,
+      },
+      {
+        accessorKey: "TenQuocGia",
+        header: "Quốc gia",
+        size: 150,
+      },
+      {
+        accessorKey: "TenTinhTP",
+        header: "Tỉnh TP",
+        size: 150,
+      },
+      {
+        accessorKey: "TenQuanHuyen",
+        header: "Quận huyện",
+        size: 150,
+      },
+      {
+        accessorKey: "TenPhuongXa",
+        header: "Phường xã",
+        size: 150,
+      },
+      {
         accessorKey: "Email", //normal accessorKey
         header: "Email",
-        size: 200,
+        size: 150,
       },
       {
         accessorKey: "DiaChi",
         header: "Địa chỉ",
+        size: 150,
+      },
+      {
+        accessorKey: "SoGTTT",
+        header: "Số GTTT",
+        size: 150,
+      },
+      {
+        accessorKey: "TenGTTT",
+        header: "Loại GTTT",
+        size: 150,
+      },
+      {
+        accessorKey: "NgheNghiep",
+        header: "Nghề nghiệp",
+        size: 150,
+      },
+      {
+        accessorKey: "TenNguonKhach",
+        header: "Nguồn khách",
+        size: 150,
+      },
+
+      {
+        accessorKey: "NgayTao",
+        header: "Ngày tạo",
+        size: 150,
+      },
+      {
+        accessorKey: "TenNguoiDung",
+        header: "Người tạo",
         size: 150,
       },
       {
@@ -67,8 +132,26 @@ const TableKhachHang = ({ data, refetch }) => {
     []
   );
 
+  // Khai báo các cột ẩn
+  const hiddenColumn = {
+    NgaySinh: false,
+    TenQuocGia: false,
+    TenTinhTP: false,
+    TenQuanHuyen: false,
+    TenPhuongXa: false,
+    SoGTTT: false,
+    TenGTTT: false,
+    NgheNghiep: false,
+    TenNguonKhach: false,
+    AnhDaiDien: false,
+    NgayTao: false,
+    TenNguoiDung: false,
+  };
+
+  // Sử dụng hook useNavigate để điều hướng trang
   const navigate = useNavigate();
 
+  // Khai báo cấu hình xuất excel
   const csvConfig = mkConfig({
     fieldSeparator: ",",
     decimalSeparator: ".",
@@ -76,8 +159,9 @@ const TableKhachHang = ({ data, refetch }) => {
     filename: "Danh sách khách hàng",
   });
 
+  // Hàm xuất excel
   const handleExportData = () => {
-    const csv = generateCsv(csvConfig)(data?.DataList ?? []);
+    const csv = generateCsv(csvConfig)(data?.DataList ?? []); // Xuất dữ liệu thành file csv
     if (csv) {
       download(csvConfig)(csv);
       message.success("Xuất excel thành công!");
@@ -87,27 +171,34 @@ const TableKhachHang = ({ data, refetch }) => {
   };
 
   const handleAdd = () => {
-    navigate("/dashboard/khachhang/add");
+    // Hàm thêm mới
+    navigate("/dashboard/khachhang/add"); // Điều hướng đến trang thêm mới
   };
 
+  // Hàm cập nhật
   const handleUpdate = (row) => {
-    const data = row.original.MaKhachHang;
-    navigate(`/dashboard/khachhang/update/${data}`);
+    // Hàm cập nhật
+    const data = row.original.MaKhachHang; // Lấy mã khách hàng từ dòng được chọn
+    navigate(`/dashboard/khachhang/update/${data}`); // Điều hướng đến trang cập nhật
   };
 
   const handleDelete = async (row) => {
-    const data = row.original.MaKhachHang;
+    // Hàm xóa
+    const data = row.original.MaKhachHang; // Lấy mã khách hàng từ dòng được chọn
 
     await Modal.confirm({
-      title: "Xác nhận xóa",
-      content: "Bạn có chắc chắn muốn xóa khách hàng này không?",
+      // Hiển thị modal xác nhận xóa
+      title: "Xác nhận xóa", // Tiêu đề modal
+      content: "Bạn có chắc chắn muốn xóa khách hàng này không?", // Nội dung modal
       onOk: async () => {
         const resp = await api.deleteKhachHang({
-          MaKhachHang: data,
+          // Gọi API xóa khách hàng
+          MaKhachHang: data, // Truyền mã khách hàng cần xóa
         });
         if (resp.Success) {
-          message.success("Xóa khách hàng thành công!");
-          await refetch();
+          // Nếu xóa thành công
+          message.success("Xóa khách hàng thành công!"); // Hiển thị thông báo xóa thành công
+          await refetch(); // Gọi hàm refetch để load lại dữ liệu
         } else {
           if (resp.Error) {
             message.error(resp.Error);
@@ -127,6 +218,7 @@ const TableKhachHang = ({ data, refetch }) => {
     });
   };
 
+  // Hàm tạo custom toolbar
   const customToolbar = () => {
     return (
       <Flex gap={10}>
@@ -150,6 +242,7 @@ const TableKhachHang = ({ data, refetch }) => {
     );
   };
 
+  // Hàm tạo custom row actions
   const customRowActions = ({ row, table, cell }) => {
     return (
       <Flex
@@ -178,6 +271,7 @@ const TableKhachHang = ({ data, refetch }) => {
       customToolbar={customToolbar}
       customRowActions={customRowActions}
       height={350}
+      hiddenColumn={hiddenColumn}
     />
   );
 };

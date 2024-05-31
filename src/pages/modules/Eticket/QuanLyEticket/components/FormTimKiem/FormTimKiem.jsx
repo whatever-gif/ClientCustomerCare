@@ -1,6 +1,5 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { faker } from "@faker-js/faker";
-import { useQuery } from "@tanstack/react-query";
 import {
   Button,
   Checkbox,
@@ -12,89 +11,17 @@ import {
   Select,
 } from "antd";
 import React from "react";
-import { useConfigApi } from "../../../../../../components/api/useConfigApi";
 import "./FormTimKiem.scss";
+import { useDataSource } from "./components/useDataSource";
 
 const FormTimKiem = ({ onFormSubmit }) => {
+  // Lấy component RangePicker từ DatePicker
   const { RangePicker } = DatePicker;
 
-  const { get } = useConfigApi();
-
-  const { data: listTrangThaiTicket } = useQuery({
-    queryKey: ["listTrangThaiTicket"],
-    queryFn: async () => {
-      const result = await get("trangthaiticket/search");
-
-      const dataList =
-        result.DataList && result.DataList.length > 0 ? result.DataList : [];
-
-      return dataList.map((item) => {
-        return {
-          label: item.TenTrangThaiTicket,
-          value: item.MaTrangThaiTicket,
-        };
-      });
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: listKhachHang } = useQuery({
-    queryKey: ["listKhachHang"],
-    queryFn: async () => {
-      const result = await get("khachhang/getActive");
-
-      const dataList =
-        result.DataList && result.DataList.length > 0 ? result.DataList : [];
-
-      return dataList.map((item) => {
-        return {
-          label: item.TenKhachHang,
-          value: item.MaKhachHang,
-        };
-      });
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  // get all nguoi dung
-  const { data: listNguoiDung } = useQuery({
-    queryKey: ["listNguoiDung"],
-    queryFn: async () => {
-      const result = await get("nguoidung/getActive");
-
-      const dataList =
-        result.DataList && result.DataList.length > 0 ? result.DataList : [];
-
-      return dataList.map((item) => {
-        return {
-          label: item.TenNguoiDung,
-          value: item.Email,
-        };
-      });
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  // get all phan loai ticket
-  const { data: listPhanLoaiTicket } = useQuery({
-    queryKey: ["listPhanLoaiTicket"],
-    queryFn: async () => {
-      const result = await get("phanloaiticket/search");
-
-      const dataList =
-        result.DataList && result.DataList.length > 0 ? result.DataList : [];
-
-      return dataList.map((item) => {
-        return {
-          label: item.TenPhanLoaiTicket,
-          value: item.MaPhanLoaiTicket,
-        };
-      });
-    },
-    refetchOnWindowFocus: false,
-  });
+  const dataSource = useDataSource(); // Sử dụng hook useDataSource để lấy dữ liệu init
 
   const onFinish = (values) => {
+    // Tạo đối tượng result từ dữ liệu form
     const result = {
       MaTicket: values.MaTicket ?? "",
       TenTicket: values.TenTicket ?? "",
@@ -114,15 +41,13 @@ const FormTimKiem = ({ onFormSubmit }) => {
       id: faker.string.uuid(),
     };
 
+    // Gọi hàm onFormSubmit và truyền đối tượng result vào
     onFormSubmit(result);
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
-
+  // hàm này để khi ta tìm kiếm nhanh trong select box sẽ không biệt hoa - thường
   const filterOption = (input, option) =>
-    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+    (option?.label ?? "").toLowerCase().includes(input.toLowerCase()); // Hàm filterOption sẽ được gọi khi tìm kiếm
 
   return (
     <Form
@@ -131,7 +56,6 @@ const FormTimKiem = ({ onFormSubmit }) => {
         remember: true,
       }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       autoComplete="off"
       labelWrap
       colon={false}
@@ -146,7 +70,7 @@ const FormTimKiem = ({ onFormSubmit }) => {
           </Form.Item>
           <Form.Item label="Khách hàng" name="MaKhachHang">
             <Select
-              options={listKhachHang}
+              options={dataSource.ListKhachHang}
               allowClear
               showSearch
               filterOption={filterOption}
@@ -156,7 +80,7 @@ const FormTimKiem = ({ onFormSubmit }) => {
         <Col span={7}>
           <Form.Item label="Phân loại" name="MaPhanLoaiTicket">
             <Select
-              options={listPhanLoaiTicket}
+              options={dataSource.ListPhanLoaiTicket}
               allowClear
               filterOption
               showSearch
@@ -164,7 +88,7 @@ const FormTimKiem = ({ onFormSubmit }) => {
           </Form.Item>
           <Form.Item label="Trạng thái" name="MaTrangThaiTicket">
             <Select
-              options={listTrangThaiTicket}
+              options={dataSource.ListTrangThaiTicket}
               allowClear
               filterOption
               showSearch
@@ -186,7 +110,7 @@ const FormTimKiem = ({ onFormSubmit }) => {
           </Form.Item>
           <Form.Item label="Người tạo" name="NguoiTao">
             <Select
-              options={listNguoiDung}
+              options={dataSource.ListNguoiDung}
               allowClear
               filterOption
               showSearch

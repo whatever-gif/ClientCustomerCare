@@ -1,12 +1,10 @@
 import { Button, Card, Flex, Typography } from "antd";
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Logo from "../../../components/layout/header/Logo";
 import "../Welcome/Welcome.scss";
 
 const Welcome = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="welcome-page">
       <Card
@@ -40,8 +38,7 @@ const Welcome = () => {
               textAlign: "center",
             }}
           >
-            Quý khách vui lòng đăng nhập/đăng ký để sử dụng các chức năng/dịch
-            vụ của chúng tôi.
+            Quý khách vui lòng đăng nhập/đăng ký để sử dụng.
           </Typography.Text>
           <Flex
             align="center"

@@ -1,12 +1,15 @@
+// Import các icon từ thư viện ant-design
 import {
   BellOutlined,
   LogoutOutlined,
   UserOutlined,
   WechatOutlined,
 } from "@ant-design/icons";
+// Import các component từ thư viện antd
 import { Avatar, Button, Dropdown, Flex, Typography } from "antd";
 import Layout, { Header } from "antd/es/layout/layout";
 import React, { useRef } from "react";
+// Import các hook từ thư viện react-router-dom
 import {
   NavLink,
   Outlet,
@@ -14,27 +17,40 @@ import {
   useNavigate,
   useSubmit,
 } from "react-router-dom";
+// Import hook useAuthInfo từ thư mục auth
 import { useAuthInfo } from "../auth/useAuthInfo";
+// Import file css
 import "../layout/CustomLayout.scss";
+// Import component PopupNguoiDung từ thư mục popup
 import PopupNguoiDung from "../popup/PopupNguoiDung";
+// Import component Logo từ thư mục header
 import Logo from "./header/Logo";
 
+// Component CustomLayout
 const CustomLayout = () => {
+  // Tạo ref cho PopupNguoiDung
   const popupNguoiDungRef = useRef();
 
+  // Lấy thông tin người dùng hiện tại từ hook useAuthInfo
   const { currentUser } = useAuthInfo();
 
+  // Sử dụng hook useSubmit
   const submit = useSubmit();
 
+  // Sử dụng hook useNavigate để điều hướng trang
   const navigate = useNavigate();
 
+  // Sử dụng hook useLocation để lấy thông tin vị trí hiện tại
   const location = useLocation();
+  // Kiểm tra xem đường dẫn hiện tại có phải là /dashboard không
   const isDashboardWithoutArgs = location.pathname === "/dashboard";
 
+  // Hàm xử lý khi người dùng nhấn logout
   const handleLogout = () => {
     submit(null, { method: "POST", action: "/logout" });
   };
 
+  // Định nghĩa style cho header
   const headerStyle = {
     color: "#fff",
     height: 64,
@@ -45,6 +61,7 @@ const CustomLayout = () => {
     alignItems: "center",
   };
 
+  // Định nghĩa danh sách admin
   const listAdmin = [
     {
       key: "1",
@@ -78,6 +95,7 @@ const CustomLayout = () => {
     },
   ];
 
+  // Định nghĩa danh sách menu
   const listMenu = [
     {
       key: "1",
@@ -102,10 +120,12 @@ const CustomLayout = () => {
     },
   ];
 
+  // Hàm mở PopupNguoiDung
   const openPopupNguoiDung = () => {
     popupNguoiDungRef.current?.show();
   };
 
+  // Định nghĩa danh sách dropdown
   const listDrop = [
     {
       label: (
@@ -127,12 +147,14 @@ const CustomLayout = () => {
     },
   ];
 
+  // Hàm điều hướng về trang chủ
   const handleGoHome = () => {
     navigate("/dashboard");
   };
 
-  console.log(currentUser.Avatar);
 
+
+  // Trả về JSX
   return (
     <Layout className="custom-layout">
       <Header className="custom-header" style={headerStyle}>
@@ -203,7 +225,7 @@ const CustomLayout = () => {
           </Flex>
         </Flex>
       </Header>
-      <div className={`main-content ${isDashboardWithoutArgs && "dashboard"}`}>
+      <div className={`main-content ${isDashboardWithoutArgs && "dashboard"} `}>
         <Outlet />
       </div>
 
@@ -212,4 +234,5 @@ const CustomLayout = () => {
   );
 };
 
+// Xuất component CustomLayout
 export default CustomLayout;

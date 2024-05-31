@@ -7,17 +7,17 @@ import {
 import { Button, Flex, message, Modal } from "antd";
 import { download, generateCsv, mkConfig } from "export-to-csv";
 import React, { useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { renderTagColor } from "../../../../../../../components/reuse/RenderTagColor";
 import { useApiService } from "../../../../../../../components/service/useApiService";
 import CustomTable from "../../../../../../../components/table/CustomTable";
 import PopupNguoiDung from "../../../TaoMoiNguoiDung/PopupNguoiDung";
 
 const TableNguoiDung = ({ data, refetch }) => {
-  const api = useApiService();
+  const api = useApiService(); // Sử dụng hook useApiService để lấy đối tượng api
 
-  const popupRef = useRef(null);
+  const popupRef = useRef(null); // Sử dụng hook useRef để lưu trữ ref của PopupNguoiDung
 
+  // Khai báo các cột của bảng
   const columns = useMemo(
     () => [
       {
@@ -33,7 +33,14 @@ const TableNguoiDung = ({ data, refetch }) => {
         header: "Mã người dùng",
         size: 250,
         Cell: ({ renderedCellValue }) => {
-          return <div className="link-primary" onClick={() => handleDetail(renderedCellValue)}>{renderedCellValue}</div>;
+          return (
+            <div
+              className="link-primary"
+              onClick={() => handleDetail(renderedCellValue)}
+            >
+              {renderedCellValue}
+            </div>
+          );
         },
       },
       {
@@ -69,41 +76,46 @@ const TableNguoiDung = ({ data, refetch }) => {
     []
   );
 
-  const navigate = useNavigate();
-
   const csvConfig = mkConfig({
     fieldSeparator: ",",
     decimalSeparator: ".",
     useKeysAsHeaders: true,
-  });
+  }); // Khai báo cấu hình xuất file csv
 
   const handleExportData = () => {
-    const csv = generateCsv(csvConfig)(data?.DataList ?? []);
+    // Hàm xuất dữ liệu ra file excel
+    const csv = generateCsv(csvConfig)(data?.DataList ?? []); // Xuất dữ liệu thành file csv
     if (csv) {
-      download(csvConfig)(csv);
-      message.success("Xuất excel thành công!");
+      download(csvConfig)(csv); // Download file csv
+      message.success("Xuất excel thành công!"); // Hiển thị thông báo xuất excel thành công
     } else {
-      message.error("Xuất excel thất bại!");
+      message.error("Xuất excel thất bại!"); // Hiển thị thông báo xuất excel thất bại
     }
   };
 
   const handleAdd = () => {
+    // Hàm thêm mới người dùng
     if (popupRef.current) {
-      popupRef.current?.show({}, "add");
+      // Nếu popupRef hiện tại tồn tại
+      popupRef.current?.show({}, "add"); // Hiển thị popup với chế độ thêm mới
     }
   };
 
   const handleUpdate = async (row) => {
-    const data = row.original;
+    // Hàm cập nhật người dùng
+    const data = row.original; // Lấy dữ liệu người dùng từ dòng được chọn
 
     const resp = await api.getByEmail({
-      Email: data.Email,
+      // Gọi API để lấy thông tin người dùng
+      Email: data.Email, // Truyền email người dùng
     });
 
     if (resp.Success) {
-      const detailData = resp.Data;
+      // Nếu lấy thông tin thành công
+      const detailData = resp.Data; // Lấy dữ liệu chi tiết người dùng
       if (popupRef.current) {
         popupRef.current?.show(
+          // Hiển thị popup với dữ liệu chi tiết người dùng
           {
             ...detailData,
             FlagSysAdmin: detailData.FlagSysAdmin == 1 ? true : false,
@@ -116,14 +128,16 @@ const TableNguoiDung = ({ data, refetch }) => {
       message.error(resp.Error);
     }
   };
-  
+
   const handleDetail = async (email) => {
+    // Hàm xem chi tiết người dùng
     const resp = await api.getByEmail({
+      // Gọi API để lấy thông tin người dùng
       Email: email,
     });
 
     if (resp.Success) {
-      const detailData = resp.Data;
+      const detailData = resp.Data; // Lấy dữ liệu chi tiết người dùng
       if (popupRef.current) {
         popupRef.current?.show(
           {
@@ -140,17 +154,20 @@ const TableNguoiDung = ({ data, refetch }) => {
   };
 
   const handleDelete = async (row) => {
-    const data = row.original.Email;
+    // Hàm xóa người dùng
+    const data = row.original.Email; // Lấy email người dùng từ dòng được chọn
 
     await Modal.confirm({
-      title: "Xác nhận xóa",
-      content: "Bạn có chắc chắn muốn xóa người dùng này không?",
+      // Hiển thị modal xác nhận xóa
+      title: "Xác nhận xóa", // Tiêu đề modal
+      content: "Bạn có chắc chắn muốn xóa người dùng này không?", // Nội dung modal
       onOk: async () => {
         const resp = await api.deleteNguoiDung({
+          // Gọi API xóa người dùng
           Email: data,
         });
         if (resp.Success) {
-          message.success("Xóa người dùng thành công!");
+          message.success("Xóa người dùng thành công!"); // Hiển thị thông báo xóa thành công
           await refetch();
         } else {
           if (resp.Error) {

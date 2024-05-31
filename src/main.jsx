@@ -12,8 +12,9 @@ const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ConfigProvider
-    locale={vi_VN}
+    locale={vi_VN} // Sử dụng ngôn ngữ tiếng Việt
     theme={{
+      // Tùy chỉnh theme cho ứng dụng
       token: {
         colorPrimary: "#03884A",
         borderRadius: 8,

@@ -2,6 +2,11 @@ import { Flex, Typography } from "antd";
 import React from "react";
 
 const ChiTiet = ({ data }) => {
+
+  if (!data){
+    return <></>
+  }
+
   return (
     <Flex
       vertical
